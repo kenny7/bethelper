@@ -1,4 +1,4 @@
-package competitor.state;
+package competitor.indicator;
 
 public enum WinOrLose {
     WIN, LOSE;

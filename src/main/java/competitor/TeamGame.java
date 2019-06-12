@@ -1,7 +1,7 @@
 package competitor;
 
-import competitor.state.HomeOrAway;
-import competitor.state.WinOrLose;
+import competitor.indicator.HomeOrAway;
+import competitor.indicator.WinOrLose;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import odd.Odd;
 import score.Run;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;

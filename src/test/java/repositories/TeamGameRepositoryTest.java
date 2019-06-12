@@ -6,6 +6,8 @@ import org.junit.Test;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,12 +31,12 @@ public class TeamGameRepositoryTest {
                 .teamGames(new LinkedList<>())
                 .build();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-        Timestamp timestamp = new Timestamp(sdf.parse("30.03.2019").getTime());
+        LocalDate localDate = LocalDate.of(2019, 05, 30);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-        System.out.println(timestamp);
+        System.out.println(localDate.format(formatter));
 
-        List<TeamGame> teamGames = ((TeamGameRepository) repository).selectBeforeDateNotIncluding(timestamp);
+        List<TeamGame> teamGames = ((TeamGameRepository) repository).selectBeforeDateNotIncluding(localDate);
 
         for (TeamGame teamGame : teamGames)
             System.out.println(teamGame);

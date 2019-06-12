@@ -1,6 +1,6 @@
 package repositories;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 public interface Repository {
 
@@ -8,5 +8,7 @@ public interface Repository {
 
     <T> T selectById(Long id);
 
-    <T> T selectBeforeDateNotIncluding(Timestamp timestamp);
+    <T> T selectBeforeDateNotIncluding(LocalDate localDate);
+
+    <T> T selectAllByName(String name);
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import repositories.TeamGameRepository;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class TeamGameInput implements InputData{
 
     private List<TeamGame> teamGames;
+    private TeamGameRepository repository;
 
     @Override
     public List<TeamGame> getInputData() {

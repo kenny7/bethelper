@@ -1,6 +1,6 @@
 package league;
 
-import competitor.state.TeamState;
+import competitor.TeamState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

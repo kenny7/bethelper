@@ -2,8 +2,8 @@ package repositories;
 
 import competitor.Team;
 import competitor.TeamGame;
-import competitor.state.HomeOrAway;
-import competitor.state.WinOrLose;
+import competitor.indicator.HomeOrAway;
+import competitor.indicator.WinOrLose;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,11 +15,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,20 +40,35 @@ public class TeamGameRepository implements Repository{
     }
 
     @Override
-    public List<TeamGame> selectBeforeDateNotIncluding(Timestamp timestamp) {
+    public TeamGame selectAllByName(String name) {
+        return null;
+    }
+
+    @Override
+    public List<TeamGame> selectBeforeDateNotIncluding(LocalDate localDate) {
 
         loadTeamGamesFromFile(file);
 
         List<TeamGame> selectedTeamGames = new LinkedList<>();
 
-        //todo
-        /*for(TeamGame teamGame : teamGames){
-            if(teamGame.getLocalDate().getTime() < localDate.getTime()){
+        for(TeamGame teamGame : teamGames){
+            if(compareDateLessThanDate(teamGame.getLocalDate(), localDate)){
                 selectedTeamGames.add(teamGame);
             }
-        }*/
+        }
 
         return selectedTeamGames;
+    }
+
+    private boolean compareDateLessThanDate(LocalDate comparedDate, LocalDate lessThanDate){
+
+        if(comparedDate.getYear() <= lessThanDate.getYear()){
+                if(comparedDate.getDayOfYear() < lessThanDate.getDayOfYear())
+                    return true;
+                else
+                    return false;
+        } else
+            return false;
     }
 
     private void loadTeamGamesFromFile(String file){
@@ -74,7 +85,7 @@ public class TeamGameRepository implements Repository{
                 teamGame.setName(array[0]);
                 teamGame.setPlace(parsePlace(array[1]));
                 teamGame.setOpponent(Team.builder().name(array[2]).build());
-                //todo teamGame.setLocalDate(parseTimestamp(array[3]));
+                teamGame.setLocalDate(parseLocalDate(array[3]));
                 teamGame.setRuns(parseRuns(array[4]));
                 teamGame.setMissedRuns(parseRuns(array[5]));
                 teamGame.setCoefficientOfWin(parseOdd(array[6]));
@@ -96,18 +107,14 @@ public class TeamGameRepository implements Repository{
             return HomeOrAway.AWAY;
     }
 
-    private Timestamp parseTimestamp(String s){
+    private LocalDate parseLocalDate(String s){
 
-        Timestamp timestamp = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        LocalDate localDate = null;
 
-        try {
-            timestamp = new Timestamp(sdf.parse(s).getTime());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        localDate = LocalDate.parse(s, formatter);
 
-        return timestamp;
+        return localDate;
     }
 
     private List<Run> parseRuns(String s){
@@ -137,25 +144,5 @@ public class TeamGameRepository implements Repository{
             return WinOrLose.WIN;
         else
             return WinOrLose.LOSE;
-    }
-
-    public static void main(String[] args) {
-
-        LocalDateTime localDateTime = LocalDateTime.of(2019, 6, 10, 10, 15);
-
-        System.out.println(localDateTime);
-
-        LocalDate localDate = LocalDate.of(2019, 06, 9);
-
-        System.out.println(localDate);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
-        localDate = LocalDate.parse("12.06.2019", formatter);
-
-        System.out.println(localDate);
-
-        System.out.println(LocalDate.now().getYear());
-
     }
 }
