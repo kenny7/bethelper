@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import competitor.state.HomeOrAway;
-import lombok.experimental.SuperBuilder;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -17,13 +15,13 @@ public class TeamState extends Team {
 
     @Builder(builderMethodName = "teamStateBuilder")
     public TeamState(Long id, String name, Long stateId,
-                     Timestamp timestamp, Integer runs,
+                     LocalDate localDate, Integer runs,
                      HomeOrAway place, Integer positionInLeague,
                      Integer gamesCount, Integer winsCount,
                      Integer losesCount, Double winPercent) {
         super(id, name);
         this.stateId = stateId;
-        this.timestamp = timestamp;
+        this.localDate = localDate;
         this.runs = runs;
         this.place = place;
         this.positionInLeague = positionInLeague;
@@ -34,7 +32,7 @@ public class TeamState extends Team {
     }
 
     private Long stateId;
-    private Timestamp timestamp;
+    private LocalDate localDate;
     private Integer runs;
     private HomeOrAway place;
     private Integer positionInLeague;

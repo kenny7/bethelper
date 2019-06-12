@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 import odd.Odd;
 import score.Run;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Data
@@ -20,13 +21,13 @@ public class TeamGame extends Team {
 
     @Builder(builderMethodName = "teamGameBuilder")
     public TeamGame(Long id, String name, Team opponent,
-                    Timestamp timestamp, Long teamGameId,
+                    LocalDate localDate, Long teamGameId,
                     List<Run> runs, List<Run> missedRuns,
                     Odd coefficientOfWin, WinOrLose result,
                     HomeOrAway place) {
         super(id, name);
         this.opponent = opponent;
-        this.timestamp = timestamp;
+        this.localDate = localDate;
         this.teamGameId = teamGameId;
         this.runs = runs;
         this.missedRuns = missedRuns;
@@ -36,7 +37,7 @@ public class TeamGame extends Team {
     }
 
     private Team opponent;
-    private Timestamp timestamp;
+    private LocalDate localDate;
     private Long teamGameId;
     private List<Run> runs;
     private List<Run> missedRuns;
@@ -48,12 +49,12 @@ public class TeamGame extends Team {
     public String toString() {
 
         StringBuilder result = new StringBuilder();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         result.append(getName()).append("\t")
                 .append(getPlace()).append("\t")
                 .append(opponent.toString()).append("\t")
-                .append(sdf.format(timestamp)).append("\t")
+                .append(localDate.format(formatter)).append("\t")
                 .append(getRuns().size()).append("\t")
                 .append(getMissedRuns().size()).append("\t")
                 .append(coefficientOfWin.toString()).append("\t")

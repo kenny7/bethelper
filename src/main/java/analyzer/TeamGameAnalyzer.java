@@ -23,7 +23,7 @@ public class TeamGameAnalyzer {
 
         /*TeamState teamState = TeamState.teamStateBuilder()
                 .name(teamGame.getName())
-                .timestamp(teamGame.getTimestamp())
+                .localDate(teamGame.getLocalDate())
                 .
                 .build();*/
     }

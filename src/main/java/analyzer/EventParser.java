@@ -11,11 +11,9 @@ import lombok.NoArgsConstructor;
 import odd.Odd;
 import score.Run;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,11 +24,62 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 @Builder
 public class EventParser {
-
     private List<BaseballGame> events;
+
     private StringInput stringInput;
     private EventOutput eventOutput;
     private String regexForParsers;
+
+    public void parseInputData(){
+        for(String line : stringInput.getLines()){
+            events.add(createBaseballGame(line));
+        }
+    }
+
+    public BaseballGame createBaseballGame(String line){
+
+        BaseballGame baseballGame = BaseballGame.builder().build();
+        String firstTeamName = parseTeamName(line, 1);
+        String secondTeamName = parseTeamName(line, 2);
+        Integer firstTeamRuns = parseTeamRuns(line, 3);
+        Integer secondTeamRuns = parseTeamRuns(line, 4);
+        Odd win1Coeff = parseEventCoefficient(line, 5);
+        Odd win2Coeff = parseEventCoefficient(line, 6);
+        LocalDate localDate = parseBaseballGameLocalDate(line, 7);
+
+        Team team = Team.builder()
+                .name(firstTeamName)
+                .build();
+        baseballGame.setTeam1(team);
+        List<Run> runs = new LinkedList<>();
+        Run run;
+        for (int i = 0; i < firstTeamRuns; i++){
+            run = Run.builder()
+                    .team(team)
+                    .build();
+            runs.add(run);
+        }
+        baseballGame.setFirstTeamRun(runs);
+
+        team = Team.builder()
+                .name(secondTeamName)
+                .build();
+        baseballGame.setTeam2(team);
+        runs = new LinkedList<>();
+        for (int i = 0; i < secondTeamRuns; i++){
+            run = Run.builder()
+                    .team(team)
+                    .build();
+            runs.add(run);
+        }
+
+        baseballGame.setSecondTeamRun(runs);
+        baseballGame.setCoefficientOfWin1(win1Coeff);
+        baseballGame.setCoefficientOfWin2(win2Coeff);
+        baseballGame.setLocalDate(localDate);
+
+        return baseballGame;
+    }
 
     public String parseDataInputLine(String line, int groupName){
 
@@ -74,96 +123,89 @@ public class EventParser {
             return null;
     }
 
-    private String stringDateCheckingAndFormat(String date){
-        StringBuilder checkingDate = new StringBuilder(date);
+    public LocalDate parseBaseballGameLocalDate(String line, int groupName){
 
-        Pattern pattern = Pattern.compile("\\d{2}\\.{1}\\d{2}\\.{1}");
-        Matcher matcher = pattern.matcher(date);
-
-        if(date.equals("Today")){
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy");
-            checkingDate = new StringBuilder(sdf.format(today()));
-        } else if(date.equals("Yesterday")){
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy");
-            checkingDate = new StringBuilder(sdf.format(yesterday()));
-        } else if(matcher.find()){
-            checkingDate.append("2019");
-        }
-        return checkingDate.toString();
-    }
-
-    private Date today(){
-        return new Date(System.currentTimeMillis());
-    }
-
-    private Date yesterday(){
-        final Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -1);
-        return calendar.getTime();
-    }
-
-    public Timestamp parseEventTimestamp(String line, int groupName){
+        LocalDate localDate = null;
 
         String date = spaceRemove(parseDataInputLine(line, groupName));
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.mm.yy");
-        try {
-            date = stringDateCheckingAndFormat(date);
-            return new Timestamp(sdf.parse(date).getTime());
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
+        if(isToday(date))
+            localDate = today();
+        if(isYesterday(date))
+            localDate = yesterday();
+        if(isDateHasNotYear(date))
+            localDate = dateHasNotYear(date);
+        if(isDateForSpecifyPattern(line))
+            localDate = dateForSpecifyPattern(date);
+
+        return localDate;
     }
 
-    public BaseballGame createBaseballGame(String line){
-
-        BaseballGame baseballGame = BaseballGame.builder().build();
-        String firstTeamName = parseTeamName(line, 1);
-        String secondTeamName = parseTeamName(line, 2);
-        Integer firstTeamRuns = parseTeamRuns(line, 3);
-        Integer secondTeamRuns = parseTeamRuns(line, 4);
-        Odd win1Coeff = parseEventCoefficient(line, 5);
-        Odd win2Coeff = parseEventCoefficient(line, 6);
-        Timestamp timestamp = parseEventTimestamp(line, 7);
-
-        Team team = Team.builder()
-                .name(firstTeamName)
-                .build();
-        baseballGame.setTeam1(team);
-        List<Run> runs = new LinkedList<>();
-        Run run;
-        for (int i = 0; i < firstTeamRuns; i++){
-            run = Run.builder()
-                    .team(team)
-                    .build();
-            runs.add(run);
-        }
-        baseballGame.setFirstTeamRun(runs);
-
-        team = Team.builder()
-                .name(secondTeamName)
-                .build();
-        baseballGame.setTeam2(team);
-        runs = new LinkedList<>();
-        for (int i = 0; i < secondTeamRuns; i++){
-            run = Run.builder()
-                    .team(team)
-                    .build();
-            runs.add(run);
-        }
-
-        baseballGame.setSecondTeamRun(runs);
-        baseballGame.setCoefficientOfWin1(win1Coeff);
-        baseballGame.setCoefficientOfWin2(win2Coeff);
-        baseballGame.setGameTimestamp(timestamp);
-
-        return baseballGame;
+    private boolean isToday(String line){
+        if(line.equals("Today"))
+            return true;
+        else
+            return false;
     }
 
-    public void parseInputData(){
-        for(String line : stringInput.getLines()){
-            events.add(createBaseballGame(line));
-        }
+    private LocalDate today(){
+        return LocalDate.now();
+    }
+
+    private boolean isYesterday(String line){
+        if(line.equals("Yesterday"))
+            return true;
+        else
+            return false;
+    }
+
+    private LocalDate yesterday(){
+        return LocalDate.now().minusDays(1);
+    }
+
+    private boolean isDateHasNotYear(String line){
+
+        LocalDate localDate = null;
+        StringBuilder date = new StringBuilder();
+
+        Pattern pattern = Pattern.compile("\\d{2}\\.{1}\\d{2}\\.{1}");
+        Matcher matcher = pattern.matcher(line);
+
+        if(matcher.find())
+            return true;
+        else
+            return false;
+    }
+
+    private LocalDate dateHasNotYear(String line){
+
+        StringBuilder date = new StringBuilder();
+        LocalDate localDate = null;
+
+        date.append(line).append(LocalDate.now().getYear());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        localDate = LocalDate.parse(date, formatter);
+
+        return localDate;
+    }
+
+    private boolean isDateForSpecifyPattern(String line){
+
+        Pattern pattern = Pattern.compile("\\d{2}\\.{1}\\d{2}\\.{1}\\d{2}");
+        Matcher matcher = pattern.matcher(line);
+
+        if(matcher.find())
+            return true;
+        else
+            return false;
+    }
+
+    private LocalDate dateForSpecifyPattern(String date){
+        LocalDate localDate = null;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        localDate = LocalDate.parse(date, formatter);
+
+        return localDate;
     }
 
     public void setBaseballGamesInOutputData(){

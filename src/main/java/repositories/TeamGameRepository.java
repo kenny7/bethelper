@@ -50,11 +50,12 @@ public class TeamGameRepository implements Repository{
 
         List<TeamGame> selectedTeamGames = new LinkedList<>();
 
-        for(TeamGame teamGame : teamGames){
-            if(teamGame.getTimestamp().getTime() < timestamp.getTime()){
+        //todo
+        /*for(TeamGame teamGame : teamGames){
+            if(teamGame.getLocalDate().getTime() < localDate.getTime()){
                 selectedTeamGames.add(teamGame);
             }
-        }
+        }*/
 
         return selectedTeamGames;
     }
@@ -73,7 +74,7 @@ public class TeamGameRepository implements Repository{
                 teamGame.setName(array[0]);
                 teamGame.setPlace(parsePlace(array[1]));
                 teamGame.setOpponent(Team.builder().name(array[2]).build());
-                teamGame.setTimestamp(parseTimestamp(array[3]));
+                //todo teamGame.setLocalDate(parseTimestamp(array[3]));
                 teamGame.setRuns(parseRuns(array[4]));
                 teamGame.setMissedRuns(parseRuns(array[5]));
                 teamGame.setCoefficientOfWin(parseOdd(array[6]));
@@ -153,6 +154,8 @@ public class TeamGameRepository implements Repository{
         localDate = LocalDate.parse("12.06.2019", formatter);
 
         System.out.println(localDate);
+
+        System.out.println(LocalDate.now().getYear());
 
     }
 }

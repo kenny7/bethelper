@@ -1,7 +1,6 @@
 package event;
 
 import competitor.Team;
-import competitor.state.TeamState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +8,9 @@ import lombok.NoArgsConstructor;
 import odd.Odd;
 import score.Run;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Data
@@ -25,19 +25,20 @@ public class BaseballGame {
     private List<Run> secondTeamRun;
     private Odd coefficientOfWin1;
     private Odd coefficientOfWin2;
-    private Timestamp gameTimestamp;
+    private LocalDate localDate;
 
     @Override
     public String toString() {
 
         StringBuilder result = new StringBuilder();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.mm.yyyy");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         result.append(team1.toString()).append(" - ").append(team2.toString()).append("\t")
                 .append(firstTeamRun.size()).append(":").append(secondTeamRun.size()).append("\t")
                 .append(coefficientOfWin1.toString()).append("\t")
                 .append(coefficientOfWin2.toString()).append("\t")
-                .append(sdf.format(getGameTimestamp()));
+                .append(getLocalDate().format(formatter));
 
         return result.toString();
     }

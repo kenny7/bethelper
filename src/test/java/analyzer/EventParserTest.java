@@ -1,12 +1,9 @@
 package analyzer;
 
-import analyzer.inputData.StringInput;
-import analyzer.outputData.EventOutput;
-import event.BaseballGame;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,7 +55,7 @@ public class EventParserTest {
         lines.add("Cleveland Indians - New York Yankees\t8:4\t  2.11  \t1.76\tYesterday");
         SimpleDateFormat sdf = new SimpleDateFormat("dd.mm.yy");
 
-        Date date = eventParser.parseEventTimestamp(lines.get(1), 7);
+        LocalDate date = eventParser.parseBaseballGameLocalDate(lines.get(1), 7);
 
         System.out.println(sdf.format(date));
 
