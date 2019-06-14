@@ -1,22 +1,18 @@
 package repositories;
 
-import competitor.Team;
-import competitor.TeamGame;
-import competitor.indicator.HomeOrAway;
-import competitor.indicator.WinOrLose;
+import analyzer.dao.TeamGameDAO;
+import entity.competitor.Team;
+import entity.competitor.TeamGame;
+import entity.competitor.TeamGameDateComparator;
+import entity.competitor.indicator.WinOrLose;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import odd.Odd;
-import score.Run;
+import repositories.filter.Filter;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,35 +20,53 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TeamGameRepository implements Repository{
+public class TeamGameRepository implements Repository<TeamGame>{
 
+    private TeamGameDAO teamGameDAO;
     private List<TeamGame> teamGames;
-    private String file;
 
-    @Override
-    public <T> void write(T t) {
+    public void loadDataToRepository(Filter filter){
+        teamGames = teamGameDAO.selectByFilter(null);
+    }
+
+    public List<TeamGame> selectAll(){
+        return teamGames;
+    }
+
+    public List<TeamGame> selectTeamGamesByNameAndDateSortedByDate(Team team, LocalDate date, boolean isDateIncluding){
+
+        List<TeamGame> inputTeamGames = selectAll();
+        List<TeamGame> selectedTeamGamesByName = selectByName(inputTeamGames, team.getName());
+        List<TeamGame> selectedTeamGamesByNameAndDateSortedByDate = new LinkedList<>();
+
+        if(isDateIncluding){
+            selectedTeamGamesByNameAndDateSortedByDate = selectBeforeDateIncluding(selectedTeamGamesByName, date);
+        } else {
+            selectedTeamGamesByNameAndDateSortedByDate = selectBeforeDateNotIncluding(selectedTeamGamesByName, date);
+        }
+
+        Collections.sort(selectedTeamGamesByNameAndDateSortedByDate, new TeamGameDateComparator());
+
+        return selectedTeamGamesByNameAndDateSortedByDate;
+    }
+
+    public List<TeamGame> selectTeamGamesByNameAndDateAndResultSortedByDate(LocalDate date, Team team, WinOrLose result){
+
+        List<TeamGame> selectedTeamGamesByNameAndDateAndResultSortedByDate = new LinkedList<>();
+
+        selectedTeamGamesByNameAndDateAndResultSortedByDate =
+                selectByResult(selectTeamGamesByNameAndDateSortedByDate(team, date, true), result);
+
+        return selectedTeamGamesByNameAndDateAndResultSortedByDate;
 
     }
 
-    @Override
-    public TeamGame selectById(Long id) {
-        return null;
-    }
-
-    @Override
-    public TeamGame selectAllByName(String name) {
-        return null;
-    }
-
-    @Override
-    public List<TeamGame> selectBeforeDateNotIncluding(LocalDate localDate) {
-
-        loadTeamGamesFromFile(file);
+    public List<TeamGame> selectByResult(List<TeamGame> teamGames, WinOrLose result){
 
         List<TeamGame> selectedTeamGames = new LinkedList<>();
 
         for(TeamGame teamGame : teamGames){
-            if(compareDateLessThanDate(teamGame.getLocalDate(), localDate)){
+            if(compareResult(teamGame.getResult(), result)){
                 selectedTeamGames.add(teamGame);
             }
         }
@@ -60,89 +74,77 @@ public class TeamGameRepository implements Repository{
         return selectedTeamGames;
     }
 
-    private boolean compareDateLessThanDate(LocalDate comparedDate, LocalDate lessThanDate){
+    private boolean compareResult(WinOrLose teamResult, WinOrLose comparedResult){
+        if(teamResult == comparedResult)
+            return true;
+        else
+            return false;
+    }
+
+    public List<TeamGame> selectByName(List<TeamGame> teamGames, String comparedName){
+        List<TeamGame> selectedTeamGames = new LinkedList<>();
+
+        for(TeamGame teamGame : teamGames){
+            if(compareTeamName(teamGame.getName(), comparedName)){
+                selectedTeamGames.add(teamGame);
+            }
+        }
+
+        return selectedTeamGames;
+    }
+
+    private boolean compareTeamName(String nameOfFirstTeam, String nameOfSecondTeam){
+        if(nameOfFirstTeam.equals(nameOfSecondTeam))
+            return true;
+        else
+            return false;
+    }
+
+    public List<TeamGame> selectBeforeDateNotIncluding(List<TeamGame> teamGames, LocalDate localDate) {
+
+        List<TeamGame> selectedTeamGames = new LinkedList<>();
+
+        for(TeamGame teamGame : teamGames){
+            if(compareDateLessThanDateNotIncluding(teamGame.getLocalDate(), localDate)){
+                selectedTeamGames.add(teamGame);
+            }
+        }
+
+        return selectedTeamGames;
+    }
+
+    private boolean compareDateLessThanDateNotIncluding(LocalDate comparedDate, LocalDate lessThanDate){
 
         if(comparedDate.getYear() <= lessThanDate.getYear()){
-                if(comparedDate.getDayOfYear() < lessThanDate.getDayOfYear())
-                    return true;
-                else
-                    return false;
+            if(comparedDate.getDayOfYear() < lessThanDate.getDayOfYear())
+                return true;
+            else
+                return false;
         } else
             return false;
     }
 
-    private void loadTeamGamesFromFile(String file){
-        try {
+    public List<TeamGame> selectBeforeDateIncluding(List<TeamGame> teamGames, LocalDate localDate) {
 
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            TeamGame teamGame = null;
+        List<TeamGame> selectedTeamGames = new LinkedList<>();
 
-            while (reader.ready()){
-
-                teamGame = TeamGame.teamGameBuilder().build();
-                String[] array = reader.readLine().split("\\t");
-
-                teamGame.setName(array[0]);
-                teamGame.setPlace(parsePlace(array[1]));
-                teamGame.setOpponent(Team.builder().name(array[2]).build());
-                teamGame.setLocalDate(parseLocalDate(array[3]));
-                teamGame.setRuns(parseRuns(array[4]));
-                teamGame.setMissedRuns(parseRuns(array[5]));
-                teamGame.setCoefficientOfWin(parseOdd(array[6]));
-                teamGame.setResult(parseResult(array[7]));
-
-                teamGames.add(teamGame);
+        for(TeamGame teamGame : teamGames){
+            if(compareDateLessThanDateIncluding(teamGame.getLocalDate(), localDate)){
+                selectedTeamGames.add(teamGame);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
+        return selectedTeamGames;
     }
 
-    private HomeOrAway parsePlace(String s){
-        if(s.equals(HomeOrAway.HOME))
-            return HomeOrAway.HOME;
-        else
-            return HomeOrAway.AWAY;
-    }
+    private boolean compareDateLessThanDateIncluding(LocalDate comparedDate, LocalDate lessThanDate){
 
-    private LocalDate parseLocalDate(String s){
-
-        LocalDate localDate = null;
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        localDate = LocalDate.parse(s, formatter);
-
-        return localDate;
-    }
-
-    private List<Run> parseRuns(String s){
-
-        List<Run> runs = new LinkedList<>();
-        int count = Integer.parseInt(s);
-
-        for(int i = 0; i < count; i++){
-            runs.add(new Run());
-        }
-        return runs;
-    }
-
-    private Odd parseOdd(String s){
-
-        Odd odd = Odd.builder()
-                .build();
-
-        if(!s.equals("none"))
-            odd.setValue(Double.parseDouble(s));
-
-        return odd;
-    }
-
-    private WinOrLose parseResult(String s){
-        if(s.equals(WinOrLose.WIN.toString()))
-            return WinOrLose.WIN;
-        else
-            return WinOrLose.LOSE;
+        if(comparedDate.getYear() <= lessThanDate.getYear()){
+            if(comparedDate.getDayOfYear() <= lessThanDate.getDayOfYear())
+                return true;
+            else
+                return false;
+        } else
+            return false;
     }
 }

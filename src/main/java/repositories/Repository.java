@@ -1,14 +1,9 @@
 package repositories;
 
-import java.time.LocalDate;
+import repositories.filter.Filter;
 
-public interface Repository {
+import java.util.List;
 
-    <T> void write(T t);
+public interface Repository<T> {
 
-    <T> T selectById(Long id);
-
-    <T> T selectBeforeDateNotIncluding(LocalDate localDate);
-
-    <T> T selectAllByName(String name);
 }

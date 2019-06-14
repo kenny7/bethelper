@@ -1,6 +1,6 @@
 package repositories;
 
-import competitor.Team;
+import entity.competitor.Team;
 
 import java.util.LinkedList;
 import java.util.List;
