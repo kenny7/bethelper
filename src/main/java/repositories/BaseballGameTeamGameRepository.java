@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BaseballGameRepository implements Repository<BaseballGame> {
+public class BaseballGameTeamGameRepository{
 
     private BaseballGameDAO baseballGameDao;
     private List<BaseballGame> baseballGames;

@@ -3,6 +3,7 @@ package analyzer;
 import entity.competitor.TeamGame;
 import entity.competitor.indicator.HomeOrAway;
 import entity.competitor.indicator.WinOrLose;
+import entity.competitor.indicator.WinPercent;
 import entity.event.BaseballGame;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +40,8 @@ public class TeamGameCreatorFromBaseballGame {
                 .missedRuns(baseballGame.getSecondTeamRun())
                 .place(HomeOrAway.HOME)
                 .coefficientOfWin(baseballGame.getCoefficientOfWin1())
+                .eventId(baseballGame.getId())
+                .winPercent(new WinPercent(new Double(0)))
                 .build();
 
         if(isTeamWinner(teamGame))
@@ -59,6 +62,8 @@ public class TeamGameCreatorFromBaseballGame {
                 .missedRuns(baseballGame.getFirstTeamRun())
                 .place(HomeOrAway.AWAY)
                 .coefficientOfWin(baseballGame.getCoefficientOfWin2())
+                .eventId(baseballGame.getId())
+                .winPercent(new WinPercent(new Double(0)))
                 .build();
 
         if(isTeamWinner(teamGame))

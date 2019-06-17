@@ -1,6 +1,6 @@
 package analyzer.dao;
 
-import analyzer.ParserBaseballGameFromStrings;
+import analyzer.parser.ParserBaseballGameFromStrings;
 import entity.event.BaseballGame;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

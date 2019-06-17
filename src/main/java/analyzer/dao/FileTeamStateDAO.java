@@ -1,7 +1,7 @@
 package analyzer.dao;
 
-import analyzer.parser.ParserTeamGameFromString;
-import entity.competitor.TeamGame;
+import analyzer.parser.ParserTeamStateFromString;
+import entity.competitor.TeamState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,35 +19,19 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileTeamGameDAO implements TeamGameDAO<TeamGame> {
+public class FileTeamStateDAO {
 
     private String file;
-    private ParserTeamGameFromString parser;
+    private ParserTeamStateFromString parser;
 
-    @Override
-    public TeamGame selectById(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<TeamGame> selectByFilter(Filter filter) {
-        List<TeamGame> teamGames = new LinkedList<>();
+    public List<TeamState> selectByFilter(Filter filter) {
+        List<TeamState> teamStates = new LinkedList<>();
         if(filter == null){
             List<String> list = loadDataFromFile();
             parser.setInputData(list);
-            teamGames = parser.parseTeamGames();
+            teamStates = parser.parseTeamStates();
         }
-        return teamGames;
-    }
-
-    @Override
-    public void write(TeamGame baseballGame) {
-
-    }
-
-    @Override
-    public void delete(TeamGame baseballGame) {
-
+        return teamStates;
     }
 
     public List<String> loadDataFromFile(){
@@ -67,4 +51,6 @@ public class FileTeamGameDAO implements TeamGameDAO<TeamGame> {
 
         return result;
     }
+
+
 }

@@ -1,9 +1,10 @@
-package analyzer;
+package analyzer.parser;
 
 import entity.competitor.Team;
 import entity.competitor.TeamGame;
 import entity.competitor.indicator.HomeOrAway;
 import entity.competitor.indicator.WinOrLose;
+import entity.competitor.indicator.WinPercent;
 import entity.odd.Odd;
 import entity.score.Run;
 import lombok.AllArgsConstructor;
@@ -39,14 +40,16 @@ public class ParserTeamGameFromString {
 
         String[] array = line.split("\t");
 
-        teamGame.setName(array[0]);
-        teamGame.setPlace(parsePlace(array[1]));
-        teamGame.setOpponent(Team.builder().name(array[2]).build());
-        teamGame.setLocalDate(parseLocalDate(array[3]));
-        teamGame.setRuns(parseRuns(array[4]));
-        teamGame.setMissedRuns(parseRuns(array[5]));
-        teamGame.setCoefficientOfWin(parseOdd(array[6]));
-        teamGame.setResult(parseResult(array[7]));
+        teamGame.setEventId(Long.parseLong(array[0]));
+        teamGame.setName(array[1]);
+        teamGame.setPlace(parsePlace(array[2]));
+        teamGame.setOpponent(Team.builder().name(array[3]).build());
+        teamGame.setLocalDate(parseLocalDate(array[4]));
+        teamGame.setRuns(parseRuns(array[5]));
+        teamGame.setMissedRuns(parseRuns(array[6]));
+        teamGame.setCoefficientOfWin(parseOdd(array[7]));
+        teamGame.setResult(parseResult(array[8]));
+        teamGame.setWinPercent(new WinPercent(Double.parseDouble(array[9].replace(",", "."))));
         return teamGame;
     }
 
@@ -62,7 +65,7 @@ public class ParserTeamGameFromString {
     }
 
     private HomeOrAway parsePlace(String s){
-        if(s.equals(HomeOrAway.HOME))
+        if(s.equals(HomeOrAway.HOME.toString()))
             return HomeOrAway.HOME;
         else
             return HomeOrAway.AWAY;

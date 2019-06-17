@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import repositories.TeamGameRepository;
+import repositories.TeamGameTextFileRepository;
 
 import java.time.LocalDate;
 import java.util.LinkedList;
@@ -21,7 +21,7 @@ import java.util.List;
 public class TeamStateCreatorByTeamGame {
 
     private List<TeamGame> teamGames = new LinkedList<>();
-    private TeamGameRepository repository;
+    private TeamGameTextFileRepository repository;
 
     public List<TeamState> calculateTeamStatesForAllTeamGames(){
         List<TeamState> teamStates = new LinkedList<>();

@@ -1,4 +1,4 @@
-package analyzer;
+package analyzer.parser;
 
 import entity.competitor.Team;
 import entity.event.BaseballGame;
@@ -26,6 +26,8 @@ public class ParserBaseballGameFromStrings {
     //todo add fields for indicate number of groups of regex and baseball games
     private List<String> inputData = new LinkedList<>();
 
+    private static Long idCounter = new Long(0);
+
     public List<BaseballGame> parseBaseballGames(){
         List<BaseballGame> baseballGames = new LinkedList<>();
         for(String line : inputData){
@@ -44,6 +46,8 @@ public class ParserBaseballGameFromStrings {
         Odd win1Coeff = parseEventCoefficient(line, 5);
         Odd win2Coeff = parseEventCoefficient(line, 6);
         LocalDate localDate = parseBaseballGameLocalDate(line, 7);
+        //todo добавление временно для тестирования пока нет БД
+        baseballGame.setId(idCounter++);
 
         Team team = Team.builder()
                 .name(firstTeamName)

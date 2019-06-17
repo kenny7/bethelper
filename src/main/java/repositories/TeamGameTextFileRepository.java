@@ -1,6 +1,7 @@
 package repositories;
 
 import analyzer.dao.TeamGameDAO;
+import analyzer.repository.TeamGameRepository;
 import entity.competitor.Team;
 import entity.competitor.TeamGame;
 import entity.competitor.TeamGameDateComparator;
@@ -20,13 +21,75 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TeamGameRepository implements Repository<TeamGame>{
+public class TeamGameTextFileRepository implements TeamGameRepository {
 
     private TeamGameDAO teamGameDAO;
     private List<TeamGame> teamGames;
 
+    @Override
+    public TeamGame selectTeamGameById(Long id) {
+        return null;
+    }
+
+    @Override
+    public List<TeamGame> selectTeamGamesByName(String name) {
+        return null;
+    }
+
+    @Override
+    public List<TeamGame> selectTeamGamesByBaseballGameId(Long id) {
+        return null;
+    }
+
+    @Override
+    public void writeTeamGame(TeamGame teamGame) {
+
+    }
+
+    @Override
+    public void update(TeamGame teamGame) {
+
+    }
+
+    @Override
+    public void deleteById(Long id) {
+
+    }
+
     public void loadDataToRepository(Filter filter){
         teamGames = teamGameDAO.selectByFilter(null);
+    }
+
+    public TeamGame selectTeamGameByEventIdAndName(Long id, String name){
+        List<TeamGame> teamGames = selectByName(name);
+        TeamGame result = new TeamGame();
+
+        for(TeamGame teamGame : selectByEventId(teamGames, id)){
+            result = teamGame;
+        }
+
+        return result;
+    }
+
+    public List<TeamGame> selectByEventId(List<TeamGame> teamGames, Long id){
+
+        List<TeamGame> result = new LinkedList<>();
+
+        for(TeamGame teamGame : teamGames){
+
+            if(teamGame.getEventId() == id)
+                result.add(teamGame);
+        }
+
+        return result;
+    }
+
+    public TeamGame selectTeamGameByNameAndDate(Team team, LocalDate date){
+
+        List<TeamGame> teamGames = selectBeforeDateIncluding(selectByName(team.getName()), date);
+        Collections.sort(teamGames, new TeamGameDateComparator());
+
+        return teamGames.get(teamGames.size()-1);
     }
 
     public List<TeamGame> selectAll(){
@@ -35,8 +98,7 @@ public class TeamGameRepository implements Repository<TeamGame>{
 
     public List<TeamGame> selectTeamGamesByNameAndDateSortedByDate(Team team, LocalDate date, boolean isDateIncluding){
 
-        List<TeamGame> inputTeamGames = selectAll();
-        List<TeamGame> selectedTeamGamesByName = selectByName(inputTeamGames, team.getName());
+        List<TeamGame> selectedTeamGamesByName = selectByName(team.getName());
         List<TeamGame> selectedTeamGamesByNameAndDateSortedByDate = new LinkedList<>();
 
         if(isDateIncluding){
@@ -81,7 +143,7 @@ public class TeamGameRepository implements Repository<TeamGame>{
             return false;
     }
 
-    public List<TeamGame> selectByName(List<TeamGame> teamGames, String comparedName){
+    public List<TeamGame> selectByName(String comparedName){
         List<TeamGame> selectedTeamGames = new LinkedList<>();
 
         for(TeamGame teamGame : teamGames){

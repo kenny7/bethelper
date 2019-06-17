@@ -11,7 +11,7 @@ import java.util.Comparator;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamState extends Team implements Comparable<TeamState> {
+public class TeamState extends Team{
 
     @Builder(builderMethodName = "teamStateBuilder")
     public TeamState(Long id, String name, Long stateId,
@@ -38,8 +38,4 @@ public class TeamState extends Team implements Comparable<TeamState> {
     private Integer runs;
     private Integer positionInLeague;
 
-    @Override
-    public int compareTo(TeamState o) {
-        return 0;
-    }
 }

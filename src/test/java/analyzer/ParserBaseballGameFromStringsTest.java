@@ -1,5 +1,6 @@
 package analyzer;
 
+import analyzer.parser.ParserBaseballGameFromStrings;
 import org.junit.Test;
 
 import java.util.LinkedList;

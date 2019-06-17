@@ -1,6 +1,7 @@
 package analyzer;
 
 import analyzer.dao.FileTeamGameDAO;
+import analyzer.parser.ParserTeamGameFromString;
 import analyzer.teamStateAnalyzer.TeamStateCreatorByTeamGame;
 import entity.competitor.TeamGame;
 import entity.competitor.TeamGameDateComparator;
@@ -9,7 +10,7 @@ import entity.competitor.TeamStateDateComparator;
 import org.junit.Test;
 import printer.Printer;
 import printer.TeamStatePrinter;
-import repositories.TeamGameRepository;
+import repositories.TeamGameTextFileRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,16 +26,13 @@ public class TeamStateCreatorByTeamGameTest {
             .parser(ParserTeamGameFromString.builder().build())
             .build();
 
-    TeamGameRepository repository = TeamGameRepository.builder()
+    TeamGameTextFileRepository repository = TeamGameTextFileRepository.builder()
             .teamGameDAO(teamGameDAO)
             .build();
 
     TeamStateCreatorByTeamGame creator = TeamStateCreatorByTeamGame.builder()
             .repository(repository)
             .build();
-
-
-
 
     @Test
     public void calculateTeamStatesForAllTeamGames() {

@@ -1,12 +1,12 @@
 package repositories;
 
-import analyzer.ParserBaseballGameFromStrings;
+import analyzer.parser.ParserBaseballGameFromStrings;
 import analyzer.dao.FileBaseballGameDAO;
 import org.junit.Test;
 import printer.BaseballGamePrinter;
 import printer.Printer;
 
-public class BaseballGameRepositoryTest {
+public class BaseballGameTeamGameRepositoryTest {
 
     @Test
     public void selectAllBaseballGames() {
@@ -26,7 +26,7 @@ public class BaseballGameRepositoryTest {
                 .parser(parser)
                 .build();
 
-        BaseballGameRepository repository = BaseballGameRepository.builder()
+        BaseballGameTeamGameRepository repository = BaseballGameTeamGameRepository.builder()
                 .baseballGameDao(baseballGameDAO)
                 .build();
         repository.loadDataToRepository(null);

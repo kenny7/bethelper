@@ -1,10 +1,11 @@
 package analyzer;
 
 import analyzer.dao.FileBaseballGameDAO;
+import analyzer.parser.ParserBaseballGameFromStrings;
 import org.junit.Test;
 import printer.Printer;
 import printer.TeamGamePrinter;
-import repositories.BaseballGameRepository;
+import repositories.BaseballGameTeamGameRepository;
 
 public class TeamGameCreatorFromBaseballGameTest {
 
@@ -22,11 +23,11 @@ public class TeamGameCreatorFromBaseballGameTest {
                 .build();
 
         FileBaseballGameDAO baseballGameDAO = FileBaseballGameDAO.builder()
-                .file("C:\\Users\\rock\\Documents\\data2019.txt")
+                .file("C:\\Users\\rock\\Documents\\data2018.txt")
                 .parser(parser)
                 .build();
 
-        BaseballGameRepository repository = BaseballGameRepository.builder()
+        BaseballGameTeamGameRepository repository = BaseballGameTeamGameRepository.builder()
                 .baseballGameDao(baseballGameDAO)
                 .build();
         repository.loadDataToRepository(null);

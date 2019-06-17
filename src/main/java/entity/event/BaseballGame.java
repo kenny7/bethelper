@@ -18,6 +18,7 @@ import java.util.List;
 @Builder
 public class BaseballGame {
 
+    private Long id;
     private Team team1;
     private Team team2;
     private List<Run> firstTeamRun;
@@ -33,7 +34,8 @@ public class BaseballGame {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-        result.append(team1.toString()).append(" - ").append(team2.toString()).append("\t")
+        result.append(getId()).append("\t")
+                .append(team1.toString()).append(" - ").append(team2.toString()).append("\t")
                 .append(firstTeamRun.size()).append(":").append(secondTeamRun.size()).append("\t")
                 .append(coefficientOfWin1.toString()).append("\t")
                 .append(coefficientOfWin2.toString()).append("\t")
