@@ -1,7 +1,7 @@
 package entity.competitor;
 
-import entity.competitor.indicator.HomeOrAway;
-import entity.competitor.indicator.WinOrLose;
+import entity.competitor.teamGame.HomeOrAway;
+import entity.competitor.teamGame.EventResult;
 import entity.competitor.indicator.WinPercent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +23,7 @@ public class TeamGame extends Team {
     public TeamGame(Long id, String name, Team opponent,
                     LocalDate localDate, Long eventId,
                     List<Run> runs, List<Run> missedRuns,
-                    Odd coefficientOfWin, WinOrLose result,
+                    Odd coefficientOfWin, EventResult result,
                     HomeOrAway place, WinPercent winPercent) {
         super(id, name);
         this.opponent = opponent;
@@ -44,7 +44,7 @@ public class TeamGame extends Team {
     private List<Run> missedRuns;
     private Odd coefficientOfWin;
     private HomeOrAway place;
-    private WinOrLose result;
+    private EventResult result;
     private WinPercent winPercent;
 
     @Override

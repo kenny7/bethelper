@@ -1,18 +1,18 @@
 package analyzer.repository;
 
-import entity.competitor.TeamGame;
+import entity.competitor.teamGame.TeamGame;
 
 import java.util.List;
 
-public interface TeamGameRepository {
+public interface TeamGameRepository extends Repository<TeamGame>{
 
-    TeamGame selectTeamGameById(Long id);
+    TeamGame get(Long id);
 
-    List<TeamGame> selectAll();
+    List<TeamGame> getAll();
 
-    void writeTeamGame(TeamGame teamGame);
+    TeamGame add(TeamGame teamGame);
 
     void update(TeamGame teamGame);
 
-    void deleteById(Long id);
+    void delete(Long id);
 }

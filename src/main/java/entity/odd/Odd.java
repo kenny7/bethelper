@@ -1,24 +1,39 @@
 package entity.odd;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import javax.persistence.*;
+import javax.swing.text.html.Option;
+import java.util.Optional;
+
+@Entity(name = "odd")
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "odd")
+@NamedQuery(name = "odd.getAll", query = "select c from odd c")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Odd {
+public abstract class Odd {
 
-    private Long id;
-    private Double value;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    protected Long id;
+
+    @Column(name = "value")
+    protected Double value;
+
+    public Optional<Double> getValue() {
+        return Optional.ofNullable(value);
+    }
 
     @Override
-    public String toString() {
-        if(value != null)
-            return value.toString();
-        else
-            return "none";
+    public String toString(){
+        StringBuilder result = new StringBuilder(getId().toString()).append("\t");
+        result.append(this.getClass().getSimpleName()).append("\t");
+
+        String s = String.format("%.3f", getValue().get());
+        result.append(s);
+
+        return result.toString();
     }
 }

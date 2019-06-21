@@ -7,7 +7,7 @@ import printer.Printer;
 import printer.TeamGamePrinter;
 import repositories.BaseballGameTeamGameRepository;
 
-public class TeamGameCreatorFromBaseballGameTest {
+public class TeamGameCreatorFromMLBEventTest {
 
     @Test
     public void createTeamGames() {
@@ -33,7 +33,7 @@ public class TeamGameCreatorFromBaseballGameTest {
         repository.loadDataToRepository(null);
 
         TeamGameCreatorFromBaseballGame creator = TeamGameCreatorFromBaseballGame.builder()
-                .baseballGames(repository.selectAllBaseballGames())
+                .MLBEvents(repository.selectAllBaseballGames())
                 .build();
 
         Printer printer = TeamGamePrinter.builder()

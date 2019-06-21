@@ -1,7 +1,7 @@
 package repositories;
 
 import analyzer.dao.BaseballGameDAO;
-import entity.event.BaseballGame;
+import entity.event.MLBEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,13 +17,13 @@ import java.util.List;
 public class BaseballGameTeamGameRepository{
 
     private BaseballGameDAO baseballGameDao;
-    private List<BaseballGame> baseballGames;
+    private List<MLBEvent> MLBEvents;
 
     public void loadDataToRepository(Filter filter){
-        baseballGames = baseballGameDao.selectByFilter(filter);
+        MLBEvents = baseballGameDao.selectByFilter(filter);
     }
 
-    public List<BaseballGame> selectAllBaseballGames(){
-        return baseballGames;
+    public List<MLBEvent> selectAllBaseballGames(){
+        return MLBEvents;
     }
 }

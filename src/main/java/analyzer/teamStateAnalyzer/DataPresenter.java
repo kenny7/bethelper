@@ -26,7 +26,7 @@ public class DataPresenter {
             result.append("\t");
 
             TeamGame opponent = teamGameRepository
-                    .selectTeamGameByEventIdAndName(teamGame.getEventId(), teamGame.getOpponent().getName());
+                    .selectTeamGameByEventIdAndName(teamGame.getEventId(), teamGame.getOpponent().getName().get());
 
             String winPercent =
                     String.format("%,.3f", opponent.getWinPercent().getValue());

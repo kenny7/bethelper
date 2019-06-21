@@ -31,7 +31,7 @@ public class TeamStateAnalyzer {
 
         for(TeamGame teamGame : teamGames){
 
-            Team team = Team.builder().name(teamGame.getName()).build();
+            Team team = Team.builder().name(teamGame.getName().get()).build();
             LocalDate date = teamGame.getLocalDate();
             teamGameWithTeamStates.add(createTeamGameWithTeamState(team, date));
         }
@@ -46,7 +46,7 @@ public class TeamStateAnalyzer {
 
         TeamGame teamGame = teamGameTextFileRepository.selectTeamGameByNameAndDate(team, date);
 
-        teamGameWithTeamState.setName(teamGame.getName());
+        teamGameWithTeamState.setName(teamGame.getName().get());
         teamGameWithTeamState.setOpponent(teamGame.getOpponent());
         teamGameWithTeamState.setLocalDate(teamGame.getLocalDate());
         teamGameWithTeamState.setRuns(teamGame.getRuns());

@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ParserBaseballGameFromStringsTest {
+public class ParserMLBEventFromStringsTest {
 
     String regexForParser = "(\\w+\\.*[\\s*\\w+]*) - (\\w+\\.*[\\s*\\w+]*)[\\s]+" +
             "(\\d*):(\\d*)[\\s]+" +

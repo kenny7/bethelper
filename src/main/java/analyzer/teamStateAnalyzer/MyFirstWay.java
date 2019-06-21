@@ -2,7 +2,7 @@ package analyzer.teamStateAnalyzer;
 
 import entity.competitor.TeamGame;
 import entity.competitor.TeamGameDateComparator;
-import entity.competitor.indicator.WinOrLose;
+import entity.competitor.teamGame.EventResult;
 import entity.competitor.indicator.WinPercent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +42,7 @@ public class MyFirstWay implements WayCalculation {
             winPersent = new WinPercent(winsCount, gamesCount);
 
             gamesCount++;
-            if(temp.getResult() == WinOrLose.WIN)
+            if(temp.getResult() == EventResult.WIN)
                 winsCount++;
 
             temp.setWinPercent(winPersent);

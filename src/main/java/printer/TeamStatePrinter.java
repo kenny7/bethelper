@@ -25,7 +25,7 @@ public class TeamStatePrinter implements Printer{
     }
 
     private String teamStateToString(TeamState teamState){
-        StringBuilder result = new StringBuilder(teamState.getName()).append("\t");
+        StringBuilder result = new StringBuilder(teamState.getName().get()).append("\t");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         result.append(teamState.getLocalDate().format(formatter)).append("\t")

@@ -1,7 +1,8 @@
 package analyzer.parser;
 
 import entity.competitor.Team;
-import entity.event.BaseballGame;
+import entity.event.MLBEvent;
+import entity.odd.Winner1;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,17 +29,17 @@ public class ParserBaseballGameFromStrings {
 
     private static Long idCounter = new Long(0);
 
-    public List<BaseballGame> parseBaseballGames(){
-        List<BaseballGame> baseballGames = new LinkedList<>();
+    public List<MLBEvent> parseBaseballGames(){
+        List<MLBEvent> MLBEvents = new LinkedList<>();
         for(String line : inputData){
-            baseballGames.add(createBaseballGame(line));
+            MLBEvents.add(createBaseballGame(line));
         }
-        return baseballGames;
+        return MLBEvents;
     }
 
-    private BaseballGame createBaseballGame(String line){
+    private MLBEvent createBaseballGame(String line){
 
-        BaseballGame baseballGame = BaseballGame.builder().build();
+        MLBEvent MLBEvent = entity.event.MLBEvent.builder().build();
         String firstTeamName = parseTeamName(line, 1);
         String secondTeamName = parseTeamName(line, 2);
         Integer firstTeamRuns = parseTeamRuns(line, 3);
@@ -47,12 +48,12 @@ public class ParserBaseballGameFromStrings {
         Odd win2Coeff = parseEventCoefficient(line, 6);
         LocalDate localDate = parseBaseballGameLocalDate(line, 7);
         //todo добавление временно для тестирования пока нет БД
-        baseballGame.setId(idCounter++);
+        MLBEvent.setId(idCounter++);
 
         Team team = Team.builder()
                 .name(firstTeamName)
                 .build();
-        baseballGame.setTeam1(team);
+        MLBEvent.setTeam1(team);
         List<Run> runs = new LinkedList<>();
         Run run;
         for (int i = 0; i < firstTeamRuns; i++){
@@ -61,12 +62,12 @@ public class ParserBaseballGameFromStrings {
                     .build();
             runs.add(run);
         }
-        baseballGame.setFirstTeamRun(runs);
+        MLBEvent.setRuns(runs);
 
         team = Team.builder()
                 .name(secondTeamName)
                 .build();
-        baseballGame.setTeam2(team);
+        MLBEvent.setTeam2(team);
         runs = new LinkedList<>();
         for (int i = 0; i < secondTeamRuns; i++){
             run = Run.builder()
@@ -75,12 +76,12 @@ public class ParserBaseballGameFromStrings {
             runs.add(run);
         }
 
-        baseballGame.setSecondTeamRun(runs);
-        baseballGame.setCoefficientOfWin1(win1Coeff);
-        baseballGame.setCoefficientOfWin2(win2Coeff);
-        baseballGame.setLocalDate(localDate);
+        MLBEvent.setSecondTeamRun(runs);
+        MLBEvent.setCoefficientOfWin1(win1Coeff);
+        MLBEvent.setCoefficientOfWin2(win2Coeff);
+        MLBEvent.setLocalDate(localDate);
 
-        return baseballGame;
+        return MLBEvent;
     }
 
     private String parseDataInputLine(String line, int groupName){
@@ -106,7 +107,7 @@ public class ParserBaseballGameFromStrings {
 
     private Odd parseEventCoefficient(String line, int groupName){
         String coeff = parseDataInputLine(line, groupName);
-        Odd odd = Odd.builder().build();
+        Odd odd = Winner1.winner1Builder().build();
         if(coeff != null)
             odd.setValue(Double.parseDouble(spaceRemove(commaReplacement(coeff))));
         return odd;

@@ -1,6 +1,6 @@
 package entity.league.season;
 
-import entity.event.BaseballGame;
+import entity.event.MLBEvent;
 import entity.league.TeamLeagueState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import java.util.List;
 public class Season {
 
     private Long id;
-    private List<BaseballGame> games;
+    private List<MLBEvent> games;
     private List<TeamLeagueState> americanLeague;
     private List<TeamLeagueState> nationalLeague;
 

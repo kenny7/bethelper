@@ -1,7 +1,7 @@
 package analyzer.dao;
 
 import analyzer.parser.ParserBaseballGameFromStrings;
-import entity.event.BaseballGame;
+import entity.event.MLBEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,37 +19,37 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileBaseballGameDAO implements BaseballGameDAO<BaseballGame> {
+public class FileBaseballGameDAO implements BaseballGameDAO<MLBEvent> {
 
     private String file;
     private ParserBaseballGameFromStrings parser;
 
     @Override
-    public BaseballGame selectById(Long id) {
+    public MLBEvent selectById(Long id) {
         return null;
     }
 
     @Override
-    public List<BaseballGame> selectByFilter(Filter filter) {
+    public List<MLBEvent> selectByFilter(Filter filter) {
 
-        List<BaseballGame> baseballGames = new LinkedList<>();
+        List<MLBEvent> MLBEvents = new LinkedList<>();
 
         if(filter == null){
             List<String> list = loadDataFromFile();
             parser.setInputData(list);
-            baseballGames = parser.parseBaseballGames();
+            MLBEvents = parser.parseBaseballGames();
         }
 
-        return baseballGames;
+        return MLBEvents;
     }
 
     @Override
-    public void write(BaseballGame baseballGame) {
+    public void write(MLBEvent MLBEvent) {
 
     }
 
     @Override
-    public void delete(BaseballGame baseballGame) {
+    public void delete(MLBEvent MLBEvent) {
 
     }
 

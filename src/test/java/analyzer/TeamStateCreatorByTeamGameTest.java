@@ -39,7 +39,7 @@ public class TeamStateCreatorByTeamGameTest {
 
         repository.loadDataToRepository(null);
 
-        List<TeamGame> teamGames = repository.selectAll();
+        List<TeamGame> teamGames = repository.getAll();
 
         TeamGameDateComparator teamGameDateComparator = new TeamGameDateComparator();
         Collections.sort(teamGames, teamGameDateComparator);

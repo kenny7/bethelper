@@ -1,7 +1,7 @@
 package entity.competitor;
 
-import entity.competitor.indicator.HomeOrAway;
-import entity.competitor.indicator.WinOrLose;
+import entity.competitor.teamGame.HomeOrAway;
+import entity.competitor.teamGame.EventResult;
 import entity.competitor.indicator.WinPercent;
 import entity.odd.Odd;
 import entity.score.Run;
@@ -25,7 +25,7 @@ public class TeamGameWithTeamState extends TeamGame{
     public TeamGameWithTeamState(Long id, String name, Team opponent,
                                  LocalDate localDate, Long eventId,
                                  List<Run> runs, List<Run> missedRuns,
-                                 Odd coefficientOfWin, WinOrLose result,
+                                 Odd coefficientOfWin, EventResult result,
                                  HomeOrAway place, WinPercent winPercent,
                                  TeamState opponentState, TeamState teamState) {
         super(id, name, opponent, localDate, eventId, runs, missedRuns, coefficientOfWin, result, place, winPercent);

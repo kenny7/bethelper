@@ -3,7 +3,7 @@ package analyzer.teamStateAnalyzer;
 import entity.competitor.Team;
 import entity.competitor.TeamGame;
 import entity.competitor.TeamState;
-import entity.competitor.indicator.WinOrLose;
+import entity.competitor.teamGame.EventResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,7 +35,7 @@ public class TeamStateCreatorByTeamGame {
     public TeamState createTeamStateForDate(Team team, LocalDate date){
 
         TeamState teamState = TeamState.teamStateBuilder()
-                .name(team.getName())
+                .name(team.getName().get())
                 .localDate(date)
                 .build();
 
@@ -62,14 +62,14 @@ public class TeamStateCreatorByTeamGame {
 
     public Integer calculatedCountOfWins(LocalDate date, Team team){
 
-        List<TeamGame> result = repository.selectTeamGamesByNameAndDateAndResultSortedByDate(date, team, WinOrLose.WIN);
+        List<TeamGame> result = repository.selectTeamGamesByNameAndDateAndResultSortedByDate(date, team, EventResult.WIN);
 
         return result.size();
     }
 
     public Integer calculateCountOfLoses(LocalDate date, Team team){
 
-        List<TeamGame> result = repository.selectTeamGamesByNameAndDateAndResultSortedByDate(date, team, WinOrLose.LOSE);
+        List<TeamGame> result = repository.selectTeamGamesByNameAndDateAndResultSortedByDate(date, team, EventResult.LOSE);
 
         return result.size();
     }

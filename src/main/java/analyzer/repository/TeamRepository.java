@@ -4,15 +4,15 @@ import entity.competitor.Team;
 
 import java.util.List;
 
-public interface TeamRepository {
+public interface TeamRepository extends Repository<Team>{
 
-    Team selectTeamById(Long id);
+    Team get(Long id);
 
-    List<Team> selectAll();
+    List<Team> getAll();
 
-    void writeTeam(Team team);
+    Team add(Team teamGame);
 
-    void update(Team team);
+    void update(Team teamGame);
 
-    void deleteById(Long id);
+    void delete(Long id);
 }

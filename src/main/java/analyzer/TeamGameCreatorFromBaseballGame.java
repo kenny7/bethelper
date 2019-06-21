@@ -1,10 +1,10 @@
 package analyzer;
 
 import entity.competitor.TeamGame;
-import entity.competitor.indicator.HomeOrAway;
-import entity.competitor.indicator.WinOrLose;
+import entity.competitor.teamGame.HomeOrAway;
+import entity.competitor.teamGame.EventResult;
 import entity.competitor.indicator.WinPercent;
-import entity.event.BaseballGame;
+import entity.event.MLBEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,57 +19,57 @@ import java.util.List;
 @Builder
 public class TeamGameCreatorFromBaseballGame {
 
-    private List<BaseballGame> baseballGames = new LinkedList<>();
+    private List<MLBEvent> MLBEvents = new LinkedList<>();
 
     public List<TeamGame> createTeamGames(){
         List<TeamGame> teamGames = new LinkedList<>();
-        for (BaseballGame baseballGame : baseballGames){
-            teamGames.add(createFirstTeamGame(baseballGame));
-            teamGames.add(createSecondTeamGame(baseballGame));
+        for (MLBEvent MLBEvent : MLBEvents){
+            teamGames.add(createFirstTeamGame(MLBEvent));
+            teamGames.add(createSecondTeamGame(MLBEvent));
         }
         return teamGames;
     }
 
-    public TeamGame createFirstTeamGame(BaseballGame baseballGame){
+    public TeamGame createFirstTeamGame(MLBEvent MLBEvent){
 
         TeamGame teamGame = TeamGame.teamGameBuilder()
-                .name(baseballGame.getTeam1().getName())
-                .opponent(baseballGame.getTeam2())
-                .localDate(baseballGame.getLocalDate())
-                .runs(baseballGame.getFirstTeamRun())
-                .missedRuns(baseballGame.getSecondTeamRun())
+                .name(MLBEvent.getTeam1().get().getName().get())
+                .opponent(MLBEvent.getTeam2().get())
+                .localDate(MLBEvent.getLocalDate())
+                .runs(MLBEvent.getRuns().get())
+                .missedRuns(MLBEvent.getSecondTeamRun())
                 .place(HomeOrAway.HOME)
-                .coefficientOfWin(baseballGame.getCoefficientOfWin1())
-                .eventId(baseballGame.getId())
+                .coefficientOfWin(MLBEvent.getCoefficientOfWin1())
+                .eventId(MLBEvent.getId())
                 .winPercent(new WinPercent(new Double(0)))
                 .build();
 
         if(isTeamWinner(teamGame))
-            teamGame.setResult(WinOrLose.WIN);
+            teamGame.setResult(EventResult.WIN);
         else
-            teamGame.setResult(WinOrLose.LOSE);
+            teamGame.setResult(EventResult.LOSE);
 
         return teamGame;
     }
 
-    public TeamGame createSecondTeamGame(BaseballGame baseballGame){
+    public TeamGame createSecondTeamGame(MLBEvent MLBEvent){
 
         TeamGame teamGame = TeamGame.teamGameBuilder()
-                .name(baseballGame.getTeam2().getName())
-                .opponent(baseballGame.getTeam1())
-                .localDate(baseballGame.getLocalDate())
-                .runs(baseballGame.getSecondTeamRun())
-                .missedRuns(baseballGame.getFirstTeamRun())
+                .name(MLBEvent.getTeam2().get().getName().get())
+                .opponent(MLBEvent.getTeam1().get())
+                .localDate(MLBEvent.getLocalDate())
+                .runs(MLBEvent.getSecondTeamRun())
+                .missedRuns(MLBEvent.getRuns().get())
                 .place(HomeOrAway.AWAY)
-                .coefficientOfWin(baseballGame.getCoefficientOfWin2())
-                .eventId(baseballGame.getId())
+                .coefficientOfWin(MLBEvent.getCoefficientOfWin2())
+                .eventId(MLBEvent.getId())
                 .winPercent(new WinPercent(new Double(0)))
                 .build();
 
         if(isTeamWinner(teamGame))
-            teamGame.setResult(WinOrLose.WIN);
+            teamGame.setResult(EventResult.WIN);
         else
-            teamGame.setResult(WinOrLose.LOSE);
+            teamGame.setResult(EventResult.LOSE);
 
         return teamGame;
     }

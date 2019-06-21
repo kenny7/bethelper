@@ -1,6 +1,6 @@
 package printer;
 
-import entity.event.BaseballGame;
+import entity.event.MLBEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,12 +14,12 @@ import java.util.List;
 @Builder
 public class BaseballGamePrinter implements Printer {
 
-    private List<BaseballGame> baseballGames;
+    private List<MLBEvent> MLBEvents;
 
     @Override
     public void printData() {
-        for(BaseballGame baseballGame : baseballGames)
-            System.out.println(baseballGame);
+        for(MLBEvent MLBEvent : MLBEvents)
+            System.out.println(MLBEvent);
     }
 
 }

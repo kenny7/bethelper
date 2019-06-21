@@ -1,4 +1,4 @@
-package entity.competitor.indicator;
+package entity.competitor.teamGame;
 
 public enum HomeOrAway {
     HOME, AWAY;

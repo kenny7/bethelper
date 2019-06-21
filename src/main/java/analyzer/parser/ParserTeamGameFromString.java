@@ -2,10 +2,11 @@ package analyzer.parser;
 
 import entity.competitor.Team;
 import entity.competitor.TeamGame;
-import entity.competitor.indicator.HomeOrAway;
-import entity.competitor.indicator.WinOrLose;
+import entity.competitor.teamGame.HomeOrAway;
+import entity.competitor.teamGame.EventResult;
 import entity.competitor.indicator.WinPercent;
 import entity.odd.Odd;
+import entity.odd.Winner1;
 import entity.score.Run;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -94,7 +95,7 @@ public class ParserTeamGameFromString {
 
     private Odd parseOdd(String s){
 
-        Odd odd = Odd.builder()
+        Odd odd = Winner1.winner1Builder()
                 .build();
 
         if(!s.equals("none"))
@@ -103,11 +104,11 @@ public class ParserTeamGameFromString {
         return odd;
     }
 
-    private WinOrLose parseResult(String s){
-        if(s.equals(WinOrLose.WIN.toString()))
-            return WinOrLose.WIN;
+    private EventResult parseResult(String s){
+        if(s.equals(EventResult.WIN.toString()))
+            return EventResult.WIN;
         else
-            return WinOrLose.LOSE;
+            return EventResult.LOSE;
     }
 
 }

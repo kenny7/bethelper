@@ -1,6 +1,6 @@
 package analyzer;
 
-import analyzer.repository.BaseballGameRepository;
+import analyzer.repository.MLBEventRepository;
 import analyzer.repository.TeamRepository;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,8 @@ import analyzer.repository.TeamGameRepository;
 public class DatabaseAdministrator {
 
     private TeamGameRepository teamGameRepository;
-    private BaseballGameRepository baseballGameRepository;
+    private MLBEventRepository MLBEventRepository;
     private TeamRepository teamRepository;
+
 
 }

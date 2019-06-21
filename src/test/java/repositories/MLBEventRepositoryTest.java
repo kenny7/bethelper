@@ -6,7 +6,7 @@ import org.junit.Test;
 import printer.BaseballGamePrinter;
 import printer.Printer;
 
-public class BaseballGameTeamGameRepositoryTest {
+public class MLBEventRepositoryTest {
 
     @Test
     public void selectAllBaseballGames() {
@@ -32,7 +32,7 @@ public class BaseballGameTeamGameRepositoryTest {
         repository.loadDataToRepository(null);
 
         Printer printer = BaseballGamePrinter.builder()
-                .baseballGames(repository.selectAllBaseballGames())
+                .MLBEvents(repository.selectAllBaseballGames())
                 .build();
 
         printer.printData();
