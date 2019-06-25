@@ -1,15 +1,14 @@
 package entity.event;
 
+import analyzer.parser.MLBStage;
+import analyzer.repository.hibernate.MLBStageAttributeConverter;
 import entity.competitor.Team;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import entity.odd.Odd;
 import entity.score.Run;
-import org.hibernate.annotations.Columns;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -58,6 +57,10 @@ public class MLBEvent {
     )
     private List<Odd> odds;
 
+    @Column
+    @Convert(converter = MLBStageAttributeConverter.class)
+    private MLBStage MLBStage;
+
     @Transient
     private LocalDate localDate;
 
@@ -99,7 +102,12 @@ public class MLBEvent {
 
         result.append(getId()).append("\t")
                 .append(getTeam1().get().toString()).append(" - ").append(getTeam2().get().toString()).append("\t")
-                .append(getTimestamp().get().format(formatter));
+                .append(getTimestamp().get().format(formatter)).append("\t");
+
+        String odd = getOdds().isPresent() ? getOdds().toString() : "no odds";
+
+        result.append(odd);
+
 
         return result.toString();
     }

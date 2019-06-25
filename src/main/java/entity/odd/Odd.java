@@ -28,7 +28,7 @@ public abstract class Odd {
 
     @Override
     public String toString(){
-        StringBuilder result = new StringBuilder(getId().toString()).append("\t");
+        StringBuilder result = new StringBuilder();
         result.append(this.getClass().getSimpleName()).append("\t");
 
         String s = String.format("%.3f", getValue().get());

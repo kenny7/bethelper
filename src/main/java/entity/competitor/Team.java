@@ -22,8 +22,12 @@ public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    @Column(name = "name", length = 50)
+    @Column(name = "name", length = 50, unique = true)
     private String name;
+
+    public Team(String name) {
+        this.name = name;
+    }
 
     @Override
     public boolean equals(Object o) {

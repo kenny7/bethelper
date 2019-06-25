@@ -25,4 +25,7 @@ public class Run {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    public Run(Team team) {
+        this.team = team;
+    }
 }
