@@ -22,7 +22,8 @@ import java.util.Optional;
 @NoArgsConstructor
 @Builder
 @Entity(name = "mlbEvent")
-@Table(name = "MLBEvent")
+@Table(name = "MLBEvent",
+uniqueConstraints = {@UniqueConstraint(columnNames = {"team1", "team2", "date"})})
 @NamedQuery(name = "mlbevent.getAll", query = "select c from mlbEvent c")
 public class MLBEvent {
 
@@ -31,11 +32,11 @@ public class MLBEvent {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "team1_id")
+    @JoinColumn(name = "team1")
     private Team team1;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "team2_id")
+    @JoinColumn(name = "team2")
     private Team team2;
 
     @Column(name = "date")
@@ -98,7 +99,7 @@ public class MLBEvent {
 
         StringBuilder result = new StringBuilder();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
         result.append(getId()).append("\t")
                 .append(getTeam1().get().toString()).append(" - ").append(getTeam2().get().toString()).append("\t")

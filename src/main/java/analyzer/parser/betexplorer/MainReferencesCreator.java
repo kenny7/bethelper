@@ -1,29 +1,26 @@
 package analyzer.parser.betexplorer;
 
 import analyzer.parser.MLBStage;
-import entity.event.MLBEvent;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PreSeasonReferencesCreator extends StageGameReferencesCreator{
+public class MainReferencesCreator extends StageGameReferencesCreator{
 
-    public PreSeasonReferencesCreator(String reference, MLBStage stage) {
+    public MainReferencesCreator(String reference, MLBStage stage) {
         super(reference, stage);
     }
 
-    public PreSeasonReferencesCreator() {
+    public MainReferencesCreator() {
     }
 
     @Override
     public List<String> getReferences() {
 
-        Document stagePage = openStagePage(reference);
+        Document stagePage = openStagePage(reference + "&month=all");
         Element table_main = find_table_main_In(stagePage);
         Elements table_rows = findTableRows(table_main);
 
@@ -31,4 +28,6 @@ public class PreSeasonReferencesCreator extends StageGameReferencesCreator{
 
         return references;
     }
+
+
 }

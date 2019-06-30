@@ -1,78 +1,157 @@
 package analyzer.parser.betexplorer;
 
 import analyzer.parser.MLBStage;
+import analyzer.repository.TeamRepository;
 import entity.competitor.Team;
 import entity.event.MLBEvent;
 import entity.odd.Odd;
 import entity.odd.Winner1;
 import entity.odd.Winner2;
 import entity.score.Run;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import javax.print.Doc;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ParserMLBEventFromBetExplorer {
 
     private String localURL = "https://www.betexplorer.com";
-    private String sportKind;
-    private String leagueName;
-    private String countru;
-    private String season;
+    private int countTask;
+    private static Semaphore semaphore;
+    private List<MLBEvent> mlbEvents;
+    private Queue<Future<MLBEvent>> futures;
+    private List<String> references;
 
     public List<MLBEvent> parseMLB(String season){
 
         List<MLBEvent> mlbEvents = new LinkedList<>();
+
         Document resultPage = openResultsPage(season);
         Map<MLBStage, String> gameStatusStringMap = createGameStatusReferencesMap(resultPage);
 
         for(Map.Entry<MLBStage, String> entry : gameStatusStringMap.entrySet()){
 
-            Document stagePage = openStagePage(entry.getValue());
-            Element table_main = find_table_main_In(stagePage);
-            Elements table_rows = findTableRows(table_main);
-
-            List<String> references = createGameReferences(table_rows);
-
-            for(String s : references){
-
-                MLBEvent mlbEvent = parseMLBEvent(s);
-                mlbEvent.setMLBStage(entry.getKey());
-            }
+            mlbEvents.addAll(parseMLBStage(StageGameReferencesCreator.creatorFactory(entry.getKey(), entry.getValue())));
 
         }
 
         return mlbEvents;
     }
 
-    public List<MLBEvent> parseMLBStage(MLBStage stage, String reference){
+    public List<MLBEvent> parseMLBStage(StageGameReferencesCreator creator){
 
         List<MLBEvent> mlbEvents = new LinkedList<>();
+        Queue<Future<MLBEvent>> futures = new LinkedBlockingQueue<>();
 
-        Document stagePage = openStagePage(reference);
-        Element table_main = find_table_main_In(stagePage);
-        Elements table_rows = findTableRows(table_main);
+        Producer producer = new Producer(5, 3, 300,
+                creator.getReferences(), futures);
 
-        List<String> references = createGameReferences(table_rows);
+        producer.createFutures();
 
-        for(String s : references){
-
-            MLBEvent mlbEvent = parseMLBEvent(s);
-            mlbEvent.setMLBStage(stage);
-            mlbEvents.add(mlbEvent);
+        for(Future<MLBEvent> future : futures){
+            try {
+                MLBEvent mlbEvent = future.get();
+                mlbEvent.setMLBStage(creator.getStage());
+                mlbEvents.add(mlbEvent);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         }
 
         return mlbEvents;
+    }
+
+    class Producer extends Thread{
+
+        int taskCount;
+        int threadCount;
+        int timeout;
+        List<String> references;
+        Queue<Future<MLBEvent>> futures;
+        ExecutorService exec;
+
+        public Producer(int taskCount, int threadCount, int timeout,
+                        List<String> references, Queue<Future<MLBEvent>> futures) {
+            this.taskCount = taskCount;
+            this.threadCount = threadCount;
+            this.timeout = timeout;
+            this.references = references;
+            this.futures = futures;
+        }
+
+        @Override
+        public void run() {
+            createFutures();
+        }
+
+        public void createFutures(){
+            exec = Executors.newFixedThreadPool(threadCount);
+
+            System.out.println(references.size());
+            for(String s : references)
+                System.out.println(s);
+
+            while (references.size() > 0){
+
+                for (int i = 0; i < switchInt(taskCount, references.size()); i++){
+
+                    String reference = references.get(i);
+                    futures.add(exec.submit(new MLBEventParseTask(reference)));
+
+                }
+
+                for(int i = 0; i < switchInt(taskCount, references.size()); i++)
+                    references.remove(i);
+
+                try {
+                    Thread.sleep(timeout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private int switchInt(int taskCount, int listSize){
+            if(taskCount < listSize)
+                return taskCount;
+            else
+                return listSize;
+        }
+
+        public synchronized void barrierSetter(int barrier){
+            barrier = references.size();
+        }
+    }
+
+    class MLBEventParseTask implements Callable<MLBEvent>{
+
+        public MLBEventParseTask(String reference) {
+            this.reference = reference;
+        }
+
+        String reference;
+
+        @Override
+        public MLBEvent call() throws Exception {
+            return parseMLBEvent(reference);
+        }
     }
 
     public MLBEvent parseMLBEvent(String reference){
@@ -126,7 +205,9 @@ public class ParserMLBEventFromBetExplorer {
                 .append("/results/");
 
         try {
-            resultPage = Jsoup.connect(url.toString()).get();
+            resultPage = Jsoup.connect(url.toString())
+                    .timeout(10*1000)
+                    .get();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -198,44 +279,6 @@ public class ParserMLBEventFromBetExplorer {
         return a.attr("href");
     }
 
-    public Document openStagePage(String location){
-        Document stagePage = null;
-        try {
-            stagePage = Jsoup.connect(location).get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stagePage;
-    }
-
-    public Element find_table_main_In(Document stagePage){
-        return stagePage.getElementsByClass("table-main h-mb15 js-tablebanner-t js-tablebanner-ntb").first();
-    }
-
-    public Elements findTableRows(Element table_main){
-        return table_main.getElementsByTag("tr");
-    }
-
-    public List<String> createGameReferences(Elements table_rows){
-
-        List<String> gameReferences = new LinkedList<>();
-
-        for(Element row : table_rows){
-
-            Element table_column = find_first_td_In(row);
-            Element a = find_tag_a_In(table_column);
-            String href = find_href_In(a);
-            gameReferences.add(localURL + href);
-        }
-
-        return gameReferences;
-
-    }
-
-    public Element find_first_td_In(Element table_row){
-        return table_row.getElementsByTag("td").first();
-    }
-
     public Document openMLBEventPage(String reference){
 
         Document mlbEventPage = null;
@@ -250,35 +293,52 @@ public class ParserMLBEventFromBetExplorer {
     }
 
     public Element find_list_details(Document mlbEventPage){
-        return mlbEventPage.getElementsByClass("list-details").first();
+        if(mlbEventPage != null)
+            return mlbEventPage.getElementsByClass("list-details").first();
+        else
+            return null;
     }
 
     public Elements find_list_details_item(Element list_details){
-        return list_details.getElementsByClass("list-details__item");
+        if(list_details != null)
+            return list_details.getElementsByClass("list-details__item");
+        else
+            return null;
     }
 
     public Element find_list_details_item_title(Element find_list_details_item){
-        return find_list_details_item.getElementsByClass("list-details__item__title").first();
+        if(find_list_details_item != null)
+            return find_list_details_item.getElementsByClass("list-details__item__title").first();
+        else
+            return null;
     }
 
     public Element find_list_details_item_date(Element list_details_item){
-        return list_details_item.getElementsByClass("list-details__item__date").first();
+        if(list_details_item != null)
+            return list_details_item.getElementsByClass("list-details__item__date").first();
+        else
+            return null;
     }
 
     public Element find_list_details_item_score(Element list_details_item){
-        return list_details_item.getElementsByClass("list-details__item__score").first();
+        if(list_details_item != null)
+            return list_details_item.getElementsByClass("list-details__item__score").first();
+        else
+            return null;
     }
 
     public LocalDateTime parseDate(String date){
 
-        String[] s = date.split(",");
-        int year = Integer.parseInt(s[2]);
-        int mounth = Integer.parseInt(s[1]);
-        int day = Integer.parseInt(s[0]);
-        int hour = Integer.parseInt(s[3]);
-        int minute = Integer.parseInt(s[4]);
-
-        return LocalDateTime.of(year, mounth, day, hour, minute);
+        if(date != null) {
+            String[] s = date.split(",");
+            int year = Integer.parseInt(s[2]);
+            int mounth = Integer.parseInt(s[1]);
+            int day = Integer.parseInt(s[0]);
+            int hour = Integer.parseInt(s[3]);
+            int minute = Integer.parseInt(s[4]);
+            return LocalDateTime.of(year, mounth, day, hour, minute);
+        } else
+            return null;
     }
 
     public List<Run> parseRuns(String scores, MLBEvent mlbEvent){
@@ -350,7 +410,9 @@ public class ParserMLBEventFromBetExplorer {
         Document oddsData =null;
 
         try {
-            oddsData = Jsoup.connect(path).referrer(referrer).get();
+            oddsData = Jsoup.connect(path)
+                    .timeout(10*1000)
+                    .referrer(referrer).get();
         } catch (IOException e) {
             e.printStackTrace();
         }

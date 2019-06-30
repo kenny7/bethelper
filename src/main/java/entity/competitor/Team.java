@@ -15,7 +15,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "team")
-@Table(name = "team")
+@Table(name = "team", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 @NamedQuery(name = "team.getAll", query = "select c from team c")
 public class Team {
 

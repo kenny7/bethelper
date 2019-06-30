@@ -2,6 +2,7 @@ package analyzer.repository;
 
 import analyzer.repository.hibernate.MLBEventHibernateRepository;
 import analyzer.repository.hibernate.TeamHibernateRepository;
+import entity.competitor.Team;
 import entity.event.MLBEvent;
 import entity.odd.Odd;
 import entity.odd.Winner1;
@@ -36,19 +37,19 @@ public class MLBEventRepositoryTest {
     public void add() {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate localDate = LocalDate.parse("05.07.2019", formatter);
-        LocalDateTime dateTime = LocalDateTime.of(localDate, LocalTime.of(0, 0));
+        LocalDate localDate = LocalDate.parse("11.07.2019", formatter);
+        LocalDateTime dateTime = LocalDateTime.of(localDate, LocalTime.of(11, 35));
 
         List<Run> runs = new LinkedList<>();
 
         for(int i = 0; i < 9; i++){
             if(i > 5){
                 runs.add(Run.builder()
-                        .team(teamRepository.get(2l))
+                        .team(new Team("Baltimore Orioles"))
                         .build());
             } else {
                 runs.add(Run.builder()
-                        .team(teamRepository.get(1l))
+                        .team(new Team("Arizona Diamondbacks"))
                         .build());
             }
         }

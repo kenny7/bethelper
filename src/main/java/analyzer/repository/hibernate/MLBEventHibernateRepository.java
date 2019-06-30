@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -26,10 +27,15 @@ public class MLBEventHibernateRepository implements MLBEventRepository {
 
     @Override
     public MLBEvent add(MLBEvent mlbEvent) {
-        em.getTransaction().begin();
-        MLBEvent result = em.merge(mlbEvent);
-        em.getTransaction().commit();
-        return result;
+        try {
+            em.getTransaction().begin();
+            MLBEvent result = em.merge(mlbEvent);
+            em.getTransaction().commit();
+            return result;
+        } catch (RollbackException e){
+
+            return null;
+        }
     }
 
     @Override

@@ -15,4 +15,6 @@ public interface TeamRepository extends Repository<Team>{
     void update(Team teamGame);
 
     void delete(Long id);
+
+    Team selectTeamByName(String s);
 }

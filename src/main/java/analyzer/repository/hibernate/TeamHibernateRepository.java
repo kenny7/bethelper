@@ -2,6 +2,9 @@ package analyzer.repository.hibernate;
 
 import analyzer.repository.TeamRepository;
 import entity.competitor.Team;
+
+import javax.persistence.Query;
+import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -22,17 +25,26 @@ public class TeamHibernateRepository implements TeamRepository {
 
     @Override
     public Team add(Team team) {
-        em.getTransaction().begin();
-        Team result = em.merge(team);
-        em.getTransaction().commit();
-        return result;
+        try {
+            em.getTransaction().begin();
+            Team result = em.merge(team);
+            em.getTransaction().commit();
+            return result;
+        }catch (RollbackException e){
+
+            return null;
+        }
     }
 
     @Override
     public void update(Team team) {
-        em.getTransaction().begin();
-        em.merge(team);
-        em.getTransaction().commit();
+        try {
+            em.getTransaction().begin();
+            em.merge(team);
+            em.getTransaction().commit();
+        }catch (RollbackException e){
+
+        }
     }
 
     @Override
@@ -40,5 +52,11 @@ public class TeamHibernateRepository implements TeamRepository {
         em.getTransaction().begin();
         em.remove(get(id));
         em.getTransaction().commit();
+    }
+
+    @Override
+    public Team selectTeamByName(String s){
+        Query query = em.createQuery("select i from team i where i.name =: name ").setParameter("name", s);
+        return (Team) query.getSingleResult();
     }
 }

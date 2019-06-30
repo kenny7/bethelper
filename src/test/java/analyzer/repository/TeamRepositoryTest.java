@@ -4,6 +4,8 @@ import analyzer.repository.hibernate.TeamHibernateRepository;
 import entity.competitor.Team;
 import org.junit.Test;
 
+import javax.persistence.RollbackException;
+import javax.xml.bind.SchemaOutputResolver;
 import java.util.List;
 
 public class TeamRepositoryTest {
@@ -37,8 +39,8 @@ public class TeamRepositoryTest {
     public void update() {
 
         Team team = Team.builder()
-                .id(1l)
-                .name("Arizona Diamondbacks")
+                //.id(117l)
+                .name("Cleveland Indians")
                 .build();
         repository.update(team);
 
@@ -47,5 +49,10 @@ public class TeamRepositoryTest {
     @Test
     public void delete() {
         repository.delete(4l);
+    }
+
+    @Test
+    public void selectByNameTest(){
+        System.out.println(repository.selectTeamByName("Arizona Diamondbacks"));
     }
 }

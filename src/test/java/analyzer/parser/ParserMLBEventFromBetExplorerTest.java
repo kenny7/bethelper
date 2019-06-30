@@ -1,6 +1,7 @@
 package analyzer.parser;
 
-import analyzer.parser.betexplorer.ParserMLBEventFromBetExplorer;
+import analyzer.parser.betexplorer.*;
+import analyzer.repository.hibernate.TeamHibernateRepository;
 import entity.event.MLBEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,7 +15,8 @@ import java.util.List;
 
 public class ParserMLBEventFromBetExplorerTest {
 
-    ParserMLBEventFromBetExplorer parser = new ParserMLBEventFromBetExplorer();
+    ParserMLBEventFromBetExplorer parser = ParserMLBEventFromBetExplorer.builder()
+            .build();
 
     @Test
     public void parseMLB() {
@@ -42,18 +44,6 @@ public class ParserMLBEventFromBetExplorerTest {
     @Test
     public void createGameReferences() {
 
-        Document startPage =
-                parser.openStagePage("https://www.betexplorer.com/baseball/usa/mlb-2017/results/?stage=jgBpIosb");
-
-        Element table_main = parser.find_table_main_In(startPage);
-        Elements table_rows = parser.findTableRows(table_main);
-
-        List<String> list = parser.createGameReferences(table_rows);
-
-        for(String s : list){
-            System.out.println(s);
-        }
-
     }
 
     @Test
@@ -71,7 +61,11 @@ public class ParserMLBEventFromBetExplorerTest {
 
         List<MLBEvent> mlbEvents =
                 parser.parseMLBStage
-                        (MLBStage.PRE_SEASON, "https://www.betexplorer.com/baseball/usa/mlb-2017/results/?stage=jgBpIosb");
+                        (StageGameReferencesCreator.creatorFactory(
+                                MLBStage.PRE_SEASON,
+                                "https://www.betexplorer.com/baseball/usa/mlb-2017/results/?stage=jgBpIosb"
+                        ));
+
 
         for(MLBEvent event : mlbEvents)
             System.out.println(event);
