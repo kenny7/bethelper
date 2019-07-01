@@ -29,12 +29,16 @@ public class DatabaseAdministratorTest {
     @Test
     public void addMLBEvents() {
 
-        List<MLBEvent> events = parser.parseMLB("2018"
-        );
+        List<MLBEvent> events = parser.parseMLB("2014");
+
+        /*events = parser.parseMLBEventStage(StageGameReferencesCreator.creatorFactory(
+                MLBStage.PRE_SEASON, "https://www.betexplorer.com/baseball/usa/mlb-2018/results/?stage=tleVT45p"
+        ));*/
 
         System.out.println(events.size());
 
         databaseAdministrator.addMLBEvents(events);
+        //databaseAdministrator.updateMLBEventList(events);
 
     }
 }

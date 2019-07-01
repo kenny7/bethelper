@@ -8,7 +8,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import javax.xml.bind.SchemaOutputResolver;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -19,15 +18,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Parser {
 
     private int countSynchronousTasks;
-    private static Semaphore semaphore;
-    private static CountDownLatch stop;
     private List<MLBEvent> mlbEvents;
     private List<String> references;
-    private Lock lock;
-    private static ExecutorService mlbEventParserExecutor;
-    private static ExecutorService parseTaskExecutor;
     private MLBStage mlbStage;
+    private static ExecutorService parseTaskExecutor;
+    private static CountDownLatch stop;
     private static int parserIdCounter;
+    private Lock lock;
 
     public Parser(int countSynchronousTasks) {
         this.countSynchronousTasks = countSynchronousTasks;
@@ -42,6 +39,9 @@ public class Parser {
 
         Document resultPage = openResultsPage(season);
         Map<MLBStage, String> stagesReferences = createGameStatusReferencesMap(resultPage);
+
+        for (Map.Entry<MLBStage, String> entry : stagesReferences.entrySet())
+            System.out.println(entry.getKey() + " : " +entry.getValue());
 
         for(Map.Entry<MLBStage, String> entry : stagesReferences.entrySet()){
 
@@ -143,30 +143,41 @@ public class Parser {
         references = creator.getReferences();
         mlbStage = creator.getStage();
         stop = new CountDownLatch(references.size());
-        semaphore = new Semaphore(countTaskCheck(), true);
         parseTaskExecutor = Executors.newFixedThreadPool(countTaskCheck());
+
+        System.out.println("references size = " + references.size());
 
         for(int i = 0; i < countTaskCheck(); i++)
             parseTaskExecutor.submit(new ParseTask());
 
         waitParsingComplete();
-        parseTaskExecutor.shutdown();
-        mlbEventParserExecutor.shutdown();
+
+        shutdownAndAwaitTermination(parseTaskExecutor);
+
+        System.out.println("mlbEvents size = " + mlbEvents.size());
 
         return mlbEvents;
     }
 
-    private int countTaskCheck(){
-        if(countSynchronousTasks < references.size())
-            return countSynchronousTasks;
-        else
-            return references.size();
+    private void shutdownAndAwaitTermination(ExecutorService executor){
+        parseTaskExecutor.shutdown();
+        try {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+                if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 
-    private boolean isReferencesIteratorHasNext(){
-        synchronized (references){
-            return references.iterator().hasNext();
-        }
+    private int countTaskCheck(){
+        if(countSynchronousTasks >= references.size())
+            return references.size();
+        else
+            return countSynchronousTasks;
     }
 
     private void waitParsingComplete(){
@@ -184,7 +195,6 @@ public class Parser {
         private final int id;
 
         public ParseTask() {
-            mlbEventParserExecutor = Executors.newFixedThreadPool(countTaskCheck());
             mlbEventParser = new MLBEventParser();
             id = ++parserIdCounter;
             this.setName("parser - " + id);
@@ -213,68 +223,44 @@ public class Parser {
             try{
                 lock.lock();
                 if(mlbEvent != null) {
+                    mlbEvent.setMLBStage(mlbStage);
                     mlbEvents.add(mlbEvent);
-                    System.out.println(mlbEvent + "was add in event list");
+                    System.out.println(this.getName() + ": " + mlbEvent + " was add in event list");
                 }
             } finally {
                 lock.unlock();
             }
         }
 
-        void work(){
+        MLBEvent parseReference(String reference){
+            MLBEvent mlbEvent = null;
+            try{
+                if(reference != null) {
+                    System.out.println(this.getName() + " start parsing");
+                    mlbEvent = mlbEventParser.parse(reference);
+                }
+            }finally {
+                stop.countDown();
+            }
+            return mlbEvent;
+        }
 
+        void work(){
             while(!this.isInterrupted()){
 
                 reference = getReference();
 
-                MLBEvent mlbEvent = null;
-
-                if(reference != null) {
-                    System.out.println(this.getName() + " start parsing " + reference);
-                    mlbEvent = mlbEventParser.parse(reference);
-                }
+                MLBEvent mlbEvent = parseReference(reference);
 
                 addInList(mlbEvent);
-            }
 
+                reference = null;
+            }
         }
 
         @Override
         public void run() {
-            while (isReferencesIteratorHasNext()) {
-                try {
-                    semaphore.acquire();
-
-                    synchronized (references) {
-                        if (references.iterator().hasNext()) {
-                            reference = references.iterator().next();
-                            references.remove(reference);
-                        } else {
-                            System.out.println("references list is empty");
-                            reference = "--------------------------";
-                            break;
-                        }
-                    }
-
-                    //todo for test
-                    System.out.println("start parsing " + reference);
-
-                    MLBEvent mlbEvent = mlbEventParserExecutor.submit(new MLBEventParser(reference)).get();
-                    mlbEvent.setMLBStage(mlbStage);
-
-                    synchronized (mlbEvents) {
-                        mlbEvents.add(mlbEvent);
-                    }
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } finally {
-                    semaphore.release();
-                    stop.countDown();
-                }
-            }
+            work();
         }
     }
 
