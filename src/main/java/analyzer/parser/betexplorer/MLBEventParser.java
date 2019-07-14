@@ -1,7 +1,10 @@
 package analyzer.parser.betexplorer;
 
-import analyzer.parser.MLBStage;
-import analyzer.repository.TeamRepository;
+import analyzer.DatabaseAdministrator;
+import analyzer.repository.RunRepository;
+import analyzer.repository.hibernate.MLBEventHibernateRepository;
+import analyzer.repository.hibernate.RunHibernateRepository;
+import analyzer.repository.hibernate.TeamGameHibernateRepository;
 import analyzer.repository.hibernate.TeamHibernateRepository;
 import entity.competitor.Team;
 import entity.event.MLBEvent;
@@ -9,7 +12,6 @@ import entity.odd.Odd;
 import entity.odd.Winner1;
 import entity.odd.Winner2;
 import entity.score.Run;
-import lombok.Builder;
 import lombok.Data;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,10 +20,8 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,10 +75,16 @@ public class MLBEventParser implements Callable<MLBEvent> {
             }
         }
 
-        mlbEvent.setTeam1(new Team(firstTeam));
-        mlbEvent.setTeam2(new Team(secondTeam));
+        Team team1 = new Team(firstTeam);
+        Team team2 = new Team(secondTeam);
+
+        mlbEvent.setTeam1(team1);
+        mlbEvent.setTeam2(team2);
+
+        List<Run> runs = parseRuns(scores, mlbEvent);
+
         mlbEvent.setTimestamp(parseDate(date));
-        mlbEvent.setRuns(parseRuns(scores, mlbEvent));
+        mlbEvent.setRuns(runs);
         mlbEvent.setOdds(parseOdds(mlbEventPage));
 
         return mlbEvent;

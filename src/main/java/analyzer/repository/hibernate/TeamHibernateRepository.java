@@ -3,14 +3,16 @@ package analyzer.repository.hibernate;
 import analyzer.repository.TeamRepository;
 import entity.competitor.Team;
 
-import javax.persistence.Query;
-import javax.persistence.RollbackException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 
 public class TeamHibernateRepository implements TeamRepository {
 
-    //private EntityManager em = Persistence.createEntityManagerFactory("baseball").createEntityManager();
+    /*EntityManager em;
+
+    public TeamHibernateRepository() {
+        em = emFactory.createEntityManager();
+    }*/
 
     @Override
     public Team get(Long id) {
@@ -25,26 +27,17 @@ public class TeamHibernateRepository implements TeamRepository {
 
     @Override
     public Team add(Team team) {
-        try {
             em.getTransaction().begin();
             Team result = em.merge(team);
             em.getTransaction().commit();
             return result;
-        }catch (RollbackException e){
-
-            return null;
-        }
     }
 
     @Override
     public void update(Team team) {
-        try {
             em.getTransaction().begin();
             em.merge(team);
             em.getTransaction().commit();
-        }catch (RollbackException e){
-
-        }
     }
 
     @Override

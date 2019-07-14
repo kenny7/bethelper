@@ -1,29 +1,38 @@
 package entity.competitor.teamGame;
 
 
+import analyzer.parser.MLBStage;
 import analyzer.repository.hibernate.EvetResultConverter;
 import analyzer.repository.hibernate.HomeOrAwayConverter;
+import analyzer.repository.hibernate.MLBStageAttributeConverter;
 import entity.competitor.Team;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Entity(name = "teamGame")
-@Table(name = "teamGame")
+@Table(name = "teamGame",
+uniqueConstraints = @UniqueConstraint(columnNames = {"date", "team_id", "opponent_id"}))
 @NamedQuery(name = "teamGame.getAll", query = "select c from teamGame c")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class TeamGame {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @Column
+    private LocalDateTime date;
+
+    @Column
+    @Convert(converter = MLBStageAttributeConverter.class)
+    private MLBStage stage;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "team_id")
@@ -32,9 +41,6 @@ public class TeamGame {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "opponent_id")
     private Team opponent;
-
-    @Column
-    private Long eventId;
 
     @Column
     @Convert(converter = HomeOrAwayConverter.class)
@@ -56,16 +62,26 @@ public class TeamGame {
     @Column
     private Double winPercent;
 
+    @Column
+    private Double MLBStageWinPercent;
+
+    @Column
+    private Double winPercentInLastFiveGames;
+
+    public Optional<Double> getWinPercentInLastFiveGames() {
+        return Optional.ofNullable(winPercentInLastFiveGames);
+    }
+
+    public Optional<Long> getId(){
+        return Optional.ofNullable(id);
+    }
+
     public Optional<Team> getTeam() {
         return Optional.ofNullable(team);
     }
 
     public Optional<Team> getOpponent() {
         return Optional.ofNullable(opponent);
-    }
-
-    public Optional<Long> getEventId() {
-        return Optional.ofNullable(eventId);
     }
 
     public Optional<HomeOrAway> getPlace() {
@@ -85,25 +101,60 @@ public class TeamGame {
     }
 
     public Optional<Double> getWinCoefficient() {
-        return Optional.ofNullable(winCoefficient);
+
+        if(winCoefficient != null)
+            return Optional.ofNullable(winCoefficient);
+        else
+            return Optional.ofNullable(0.0);
     }
 
     public Optional<Double> getWinPercent() {
-        return Optional.ofNullable(winPercent);
+        if(winPercent != null)
+            return Optional.ofNullable(winPercent);
+        else
+            return Optional.ofNullable(0.0);
     }
 
     @Override
     public String toString(){
 
-        StringBuilder result = new StringBuilder(getId().toString()).append("\t");
-        result.append(getTeam().get()).append("\t")
-                .append(getPlace().get()).append("\t")
-                .append(getOpponent().get()).append("\t")
-                .append(getRuns().get()).append("\t")
-                .append(getMissedRuns().get()).append("\t")
-                .append(getResult().get()).append("\t")
-                .append(String.format("%.2f", getWinCoefficient().get())).append("\t")
-        .append(String.format("%.3f", getWinPercent().get()));
+        StringBuilder result = new StringBuilder();
+
+        String s = getId().isPresent() ? getId().get().toString() : "no id";
+        result.append(s).append("\t");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm");
+        s = getDate().format(formatter);
+        result.append(s).append("\t");
+
+        s = getTeam().get().getName().get();
+        result.append(s).append("\t");
+
+        s = getPlace().get().name();
+        result.append(s).append("\t");
+
+        s = getOpponent().get().getName().get();
+        result.append(s).append("\t");
+
+        s = getRuns().get().toString();
+        result.append(s).append("\t");
+
+        s = getMissedRuns().get().toString();
+        result.append(s).append("\t");
+
+        s = getResult().get().name();
+        result.append(s).append("\t");
+
+        s = String.format("%.2f", getWinCoefficient().get());
+        result.append(s).append("\t");
+
+        s = String.format("%.3f",
+                getWinPercent().isPresent() ? getWinPercent().get() : 0.0);
+        result.append(s).append("\t");
+
+        s = String.format("%.3f",
+                getWinPercentInLastFiveGames().isPresent() ? getWinPercentInLastFiveGames().get() : 0.0);
+        result.append(s).append("\t");
 
         return result.toString();
     }

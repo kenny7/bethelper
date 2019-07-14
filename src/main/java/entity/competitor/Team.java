@@ -1,12 +1,11 @@
 package entity.competitor;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.NamedQuery;
+import org.hibernate.annotations.SelectBeforeUpdate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -15,26 +14,23 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "team")
-@Table(name = "team", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@Table(name = "team",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 @NamedQuery(name = "team.getAll", query = "select c from team c")
-public class Team {
+public class Team implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "team_id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_sequence")
+    @EqualsAndHashCode.Exclude
     private Long id;
+
     @Column(name = "name", length = 50, unique = true)
+    @EqualsAndHashCode.Include
     private String name;
 
     public Team(String name) {
         this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Team team = (Team) o;
-        return name.equals(team.name);
     }
 
     public Optional<Long> getId() {
@@ -43,11 +39,6 @@ public class Team {
 
     public Optional<String> getName() {
         return Optional.ofNullable(name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
     }
 
     @Override

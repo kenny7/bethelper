@@ -16,7 +16,7 @@ import java.util.Optional;
 public abstract class Odd {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "odd_sequence")
     protected Long id;
 
     @Column(name = "value")

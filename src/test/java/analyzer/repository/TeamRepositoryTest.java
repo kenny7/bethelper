@@ -4,8 +4,6 @@ import analyzer.repository.hibernate.TeamHibernateRepository;
 import entity.competitor.Team;
 import org.junit.Test;
 
-import javax.persistence.RollbackException;
-import javax.xml.bind.SchemaOutputResolver;
 import java.util.List;
 
 public class TeamRepositoryTest {

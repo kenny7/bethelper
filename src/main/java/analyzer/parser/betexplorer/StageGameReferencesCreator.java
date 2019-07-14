@@ -43,11 +43,11 @@ public abstract class StageGameReferencesCreator {
         return creator;
     }
 
-    protected Document openStagePage(String location){
+    protected Document openPage(String location){
         Document stagePage = null;
         try {
             stagePage = Jsoup.connect(location)
-                    .timeout(20*1000)
+                    .timeout(30*1000)
                     .get();
         } catch (IOException e) {
             e.printStackTrace();

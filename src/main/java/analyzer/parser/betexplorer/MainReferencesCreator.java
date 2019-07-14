@@ -20,14 +20,34 @@ public class MainReferencesCreator extends StageGameReferencesCreator{
     @Override
     public List<String> getReferences() {
 
-        Document stagePage = openStagePage(reference + "&month=all");
-        Element table_main = find_table_main_In(stagePage);
-        Elements table_rows = findTableRows(table_main);
+        List<String> references = new LinkedList<>();
 
-        List<String> references = createGameReferences(table_rows);
+        Document stagePage = openPage(reference);
+        Elements monthsReferencesList = getMonths(stagePage);
+        System.out.println(monthsReferencesList);
+
+        for(int i = 0; i < monthsReferencesList.size() - 1; i++){
+            Element month = monthsReferencesList.get(i);
+            Element a = find_tag_a_In(month);
+            String href = "https://www.betexplorer.com" + find_href_In(a);
+            Document monthPage = openPage(href);
+
+            Element table_main = find_table_main_In(monthPage);
+            Elements table_rows = findTableRows(table_main);
+
+            references.addAll(createGameReferences(table_rows));
+        }
 
         return references;
     }
 
-
+    private Elements getMonths(Document stagePage){
+        if(stagePage != null) {
+            Element listMonth = stagePage.getElementsByClass("list-tabs list-tabs--secondary list-tabs--short").first();
+            Elements months = listMonth.getElementsByClass("list-tabs__item");
+            return months;
+        }
+        else
+            return null;
+    }
 }

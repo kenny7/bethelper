@@ -1,5 +1,6 @@
 package analyzer.repository.hibernate;
 
+import entity.competitor.teamGame.EventResult;
 import entity.competitor.teamGame.HomeOrAway;
 
 import javax.persistence.AttributeConverter;
@@ -17,8 +18,12 @@ public class HomeOrAwayConverter implements AttributeConverter<HomeOrAway, Strin
     public HomeOrAway convertToEntityAttribute(String s) {
         HomeOrAway place = HomeOrAway.HOME;
 
-        if(s.equals("away"))
-            place = HomeOrAway.AWAY;
+        switch (s){
+            case "AWAY" : place = HomeOrAway.AWAY;
+                break;
+            case "HOME" : place = HomeOrAway.HOME;
+                break;
+        }
 
         return place;
     }

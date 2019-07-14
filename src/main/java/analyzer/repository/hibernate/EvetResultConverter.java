@@ -18,8 +18,10 @@ public class EvetResultConverter implements AttributeConverter<EventResult, Stri
         EventResult result = EventResult.WIN;
 
         switch (s){
-            case "win" : result = EventResult.WIN;
-            case "lose" : result= EventResult.LOSE;
+            case "WIN" : result = EventResult.WIN;
+            break;
+            case "LOSE" : result= EventResult.LOSE;
+            break;
         }
 
         return result;

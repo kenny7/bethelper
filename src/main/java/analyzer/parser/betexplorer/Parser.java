@@ -225,7 +225,7 @@ public class Parser {
                 if(mlbEvent != null) {
                     mlbEvent.setMLBStage(mlbStage);
                     mlbEvents.add(mlbEvent);
-                    System.out.println(this.getName() + ": " + mlbEvent + " was add in event list");
+                    System.out.println(this.getName() + ": " + mlbEvent + " was addRun in event list");
                 }
             } finally {
                 lock.unlock();

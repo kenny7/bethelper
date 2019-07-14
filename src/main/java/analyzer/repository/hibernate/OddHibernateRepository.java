@@ -4,16 +4,21 @@ package analyzer.repository.hibernate;
 import analyzer.repository.OddRepository;
 import entity.odd.Odd;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 public class OddHibernateRepository implements OddRepository {
+
+    /*EntityManager em;
+
+    public OddHibernateRepository() {
+        em = emFactory.createEntityManager();
+    }*/
 
     @Override
     public Odd get(Long id) {

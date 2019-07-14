@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 public class ParserBaseballGameFromStrings {
 
     private String regexForParsers;
-    //todo add fields for indicate number of groups of regex and baseball games
+    //todo addRun fields for indicate number of groups of regex and baseball games
     private List<String> inputData = new LinkedList<>();
 
     private static Long idCounter = new Long(0);
@@ -75,11 +75,6 @@ public class ParserBaseballGameFromStrings {
                     .build();
             runs.add(run);
         }
-
-        MLBEvent.setSecondTeamRun(runs);
-        MLBEvent.setCoefficientOfWin1(win1Coeff);
-        MLBEvent.setCoefficientOfWin2(win2Coeff);
-        MLBEvent.setLocalDate(localDate);
 
         return MLBEvent;
     }

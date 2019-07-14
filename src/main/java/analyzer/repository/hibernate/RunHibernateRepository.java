@@ -3,19 +3,21 @@ package analyzer.repository.hibernate;
 import analyzer.repository.RunRepository;
 import entity.score.Run;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 public class RunHibernateRepository implements RunRepository {
+
+    /*EntityManager em;
+
+    public RunHibernateRepository() {
+        em = emFactory.createEntityManager();
+    }*/
 
     @Override
     public Run get(Long id) {

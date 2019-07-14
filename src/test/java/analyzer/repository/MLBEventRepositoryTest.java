@@ -94,4 +94,15 @@ public class MLBEventRepositoryTest {
     public void delete() {
         mlbEventRepository.delete(14l);
     }
+
+    @Test
+    public void selectMLBEventBetweenDate(){
+        LocalDateTime startDate = LocalDateTime.of(2016, 01, 01, 00, 00);
+        LocalDateTime finishDate = LocalDateTime.of(2016, 12, 31, 23, 59);
+
+        List<MLBEvent> events = mlbEventRepository.selectMLBEventBetweenDate(startDate, finishDate);
+
+        for(MLBEvent event : events)
+            System.out.println(event);
+    }
 }

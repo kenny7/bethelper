@@ -18,7 +18,7 @@ public class AllStarsReferencesCreator extends StageGameReferencesCreator {
 
     @Override
     public List<String> getReferences() {
-        Document stagePage = openStagePage(reference);
+        Document stagePage = openPage(reference);
         Element table_main = find_table_main_In(stagePage);
         Elements table_rows = findTableRows(table_main);
 

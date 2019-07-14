@@ -2,38 +2,23 @@ package analyzer.repository;
 
 import entity.event.MLBEvent;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MLBEventRepository extends Repository<MLBEvent>{
 
     @Override
-    default MLBEvent get(Long id) {
-        return null;
-    }
+    MLBEvent get(Long id);
 
     @Override
-    default List<MLBEvent> getAll() {
-        return null;
-    }
+    List<MLBEvent> getAll();
 
     @Override
-    default MLBEvent add(MLBEvent mlbEvent) {
-        return null;
-    }
+    MLBEvent add(MLBEvent mlbEvent);
 
     @Override
-    default void delete(Long id) {
+    void delete(Long id);
 
-    }
-
-    /*MLBEvent selectBaseballGameById(Long id);
-
-    List<MLBEvent> selectAll();
-
-    void writeBaseballGame(MLBEvent MLBEvent);
-
-    void update(MLBEvent MLBEvent);
-
-    void deleteById(Long id);*/
-
+    List<MLBEvent> selectMLBEventBetweenDate(
+            LocalDateTime startDate, LocalDateTime finishDate);
 }

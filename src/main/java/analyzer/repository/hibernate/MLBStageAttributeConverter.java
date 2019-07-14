@@ -17,6 +17,9 @@ public class MLBStageAttributeConverter implements AttributeConverter<MLBStage, 
     public MLBStage convertToEntityAttribute(String s) {
         MLBStage stage = null;
 
+        if(s == null)
+            return MLBStage.NO_STAGE;
+
         switch (s){
 
             case "PRE_SEASON" : stage = MLBStage.PRE_SEASON;
@@ -28,6 +31,9 @@ public class MLBStageAttributeConverter implements AttributeConverter<MLBStage, 
             case "PLAY_OFF" : stage = MLBStage.PLAY_OFF;
             break;
             case "ALL_STARS" : stage = MLBStage.ALL_STARS;
+            break;
+            default: stage = MLBStage.NO_STAGE;
+            break;
 
         }
         return stage;

@@ -1,15 +1,11 @@
 package analyzer.repository;
 
-import analyzer.repository.TeamGameRepository;
-import analyzer.repository.TeamRepository;
 import analyzer.repository.hibernate.TeamGameHibernateRepository;
 import analyzer.repository.hibernate.TeamHibernateRepository;
 import entity.competitor.teamGame.EventResult;
 import entity.competitor.teamGame.HomeOrAway;
 import entity.competitor.teamGame.TeamGame;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class TeamGameRepositoryTest {
 
@@ -31,7 +27,6 @@ public class TeamGameRepositoryTest {
                 .runs(5)
                 .missedRuns(4)
                 .result(EventResult.WIN)
-                .eventId(33l)
                 .winCoefficient(new Double(1.56))
                 .winPercent(new Double(0.789))
                 .build();
